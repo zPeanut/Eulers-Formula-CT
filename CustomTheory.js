@@ -159,7 +159,7 @@ var tick = (elapsedTime, multiplier) => {
     currency.value += dt * bonus *q;
 
     t += dt;
-    if(t>BigNumber.from("1e10")){
+    if(t>BigNumber.from("1e9")){
 
         theory.clearGraph();
         t = BigNumber.ZERO;

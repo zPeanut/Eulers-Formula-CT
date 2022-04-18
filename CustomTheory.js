@@ -14,17 +14,15 @@ var version = 1;
 var scale=0.2;
 var currency;
 var q1, q2;
-var b1, b2, R;
-var c1, c2, I;
+var b1, b2, I;
+var c1, c2, R;
 var a1, a2, a, aTerm;
 var q1Exp, q2Exp;
 var t;
 var q = BigNumber.ONE;
-var dimension, I_dimension;
+var dimension;
 var equationLevel = 0;
 
-var achievement1, achievement2;
-var chapter1, chapter2;
 
 var state = new Vector3(0, 0, 0);
 var center = new Vector3(0, 0, 0);
@@ -43,7 +41,7 @@ var init = () => {
         let getInfo = (level) => "q_1=" + getQ1(level).toString(0);
         q1 = theory.createUpgrade(0, currency, new FirstFreeCost(new ExponentialCost(15, Math.log2(2))));
         q1.getDescription = (_) => Utils.getMath(getDesc(q1.level));
-        q1.getInfo = (amount) => Utils.getMathTo(getDesc(q1.level), getDesc(q1.level + amount));
+        q1.getInfo = (amount) => Utils.getMathTo(getDesc(q1.level), getDesc(q1.level + amount))
     }
 
     // q2
@@ -130,8 +128,8 @@ var init = () => {
     }
 
     {
-        aTerm = theory.createMilestoneUpgrade(1, 1);
-        aTerm.getDescription = (_) => Localization.getUpgradeAddTermDesc("\\frac{a_1a_2}{100}");
+        aTerm = theory.createMilestoneUpgrade(1, 2);
+        aTerm.getDescription = (_) => Localization.getUpgradeAddTermDesc(aTerm.level == 0 ? "\\frac{a_1}{100}" : "\\frac{a_1a_2}{100}");
         aTerm.getInfo = (_) => Localization.getUpgradeAddTermInfo("\\frac{a_1a_2}{100}");
         aTerm.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
@@ -145,8 +143,8 @@ var init = () => {
 
     {
         q2Exp = theory.createMilestoneUpgrade(3, 2);
-        q2Exp.description = Localization.getUpgradeIncCustomExpDesc("q_2", "0.1");
-        q2Exp.info = Localization.getUpgradeIncCustomExpInfo("q_q", "0.1");
+        q2Exp.description = Localization.getUpgradeIncCustomExpDesc("q_2", "0.05");
+        q2Exp.info = Localization.getUpgradeIncCustomExpInfo("q_q", "0.05");
         q2Exp.boughtOrRefunded = (_) => { theory.invalidateSecondaryEquation(); }
     }
 
@@ -168,13 +166,14 @@ var init = () => {
 }
 
 var updateAvailability = () => {
-    aTerm.isAvailable = dimension.level > 0;
-    a1.isAvailable = aTerm.level != 0;
-    a2.isAvailable = aTerm.level != 0;
+
     b1.isAvailable = dimension.level > 0;
     b2.isAvailable = dimension.level > 0;
     c1.isAvailable = dimension.level > 1;
     c2.isAvailable = dimension.level > 1;
+    aTerm.isAvailable = dimension.level > 1;
+    a1.isAvailable = aTerm.level != 0;
+    a2.isAvailable = aTerm.level != 0;
 }
 
 var tick = (elapsedTime, multiplier) => {
@@ -198,12 +197,6 @@ var tick = (elapsedTime, multiplier) => {
     let value_a2 = getQ2(a2.level);
     a = BigNumber.from(value_a1 * value_a2);
 
-    let value_graph = BigNumber.from(currency.value / q);
-    I = c.toNumber() * value_graph.sin().toNumber(); // cisin(q)
-    R = b.toNumber() * value_graph.cos().toNumber(); // bcos(q)
-
-
-
     let baseCurrencyMultiplier = dt * bonus * (aTerm.level !== 0 ? (a / 100) : 1);
     if(value_q1 === BigNumber.ZERO) {
         currency.value = 0;
@@ -221,14 +214,17 @@ var tick = (elapsedTime, multiplier) => {
                 break;
         }
     }
-
-
+    let value_graph = BigNumber.from(theory.tau.pow(1/0.1) / q);
+    I = (b.toNumber() * value_graph.cos()).toNumber();
+    R = (c.toNumber() * value_graph.sin()).toNumber();
     state.x = t.toNumber();
-    state.y = I;
-    state.z = R;
+    state.y = R;
+    state.z = I;
 
-
-
+    if(t > 10) {
+        t = 0;
+        theory.clearGraph();
+    }
 
     theory.invalidateTertiaryEquation();
 }
@@ -238,8 +234,16 @@ var tick = (elapsedTime, multiplier) => {
 var getPrimaryEquation = () => {
     theory.primaryEquationHeight = 60;
     let result = "\\begin{array}{c}\\dot{\\rho} = ";
-    if(aTerm.level === 1) {
-        result += "\\frac{a_1a_2}{100}"
+    switch (aTerm.level) {
+        case 0:
+            result += ""
+            break;
+        case 1:
+            result += "\\frac{a_1}{100}";
+            break;
+        case 2:
+            result += "\\frac{a_1a_2}{100}";
+            break;4
     }
     switch(dimension.level) {
         case 0:
@@ -288,14 +292,14 @@ var getSecondaryEquation = () => {
 }
 
 var getTertiaryEquation = () => {
-    let result = t + "";
+    let result = "" + "/";
 
     result += "\\begin{matrix}q=";
     result += q.toString();
     result += ",\\;R =";
     result += BigNumber.from(R).toString(2);
     result += ",\\;I =";
-    result += BigNumber.from(R).toString(2);
+    result += BigNumber.from(I).toString(2);
     result += "\\end{matrix}";
 
     return result;
@@ -306,11 +310,11 @@ var sqrt = (n) => (BigNumber.from(n)).sqrt();
 var get3DGraphPoint = () => swizzles[0]((state - center) * scale);
 var getPublicationMultiplier = (tau) => tau.pow(0.164) / BigNumber.THREE;
 var getPublicationMultiplierFormula = (symbol) => "\\frac{{" + symbol + "}^{0.164}}{3}";
-var getTau = () => currency.value.pow(BigNumber.from(0.1));;
+var getTau = () => currency.value.pow(BigNumber.from(0.1));
 
 var getQ1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 0);
 var getQ2 = (level) => BigNumber.TWO.pow(level);
 var getQ1Exponent = (level) => BigNumber.from(1 + 0.1 * level);
-var getQ2Exponent = (level) => BigNumber.from(1 + 0.1 * level);
+var getQ2Exponent = (level) => BigNumber.from(1 + 0.05 * level);
 
 init();

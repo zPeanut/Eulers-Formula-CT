@@ -57,7 +57,7 @@ var init = () => {
     {
         let getDesc = (level) => "b_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "b_1=" + getQ1(level).toString(0);
-        b1 = theory.createUpgrade(2, currency, new ExponentialCost(20, 3));
+        b1 = theory.createUpgrade(2, currency, new ExponentialCost(20, 1.5));
         b1.level = 1;
         b1.getDescription = (_) => Utils.getMath(getDesc(b1.level));
         b1.getInfo = (amount) => Utils.getMathTo(getDesc(b1.level), getDesc(b1.level + amount));
@@ -76,7 +76,7 @@ var init = () => {
     {
         let getDesc = (level) => "c_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "c_1=" + getQ1(level).toString(0);
-        c1 = theory.createUpgrade(4, currency, new ExponentialCost(20, 3));
+        c1 = theory.createUpgrade(4, currency, new ExponentialCost(20, 1.5));
         c1.level = 1;
         c1.getDescription = (_) => Utils.getMath(getDesc(c1.level));
         c1.getInfo = (amount) => Utils.getMathTo(getDesc(c1.level), getDesc(c1.level + amount));
@@ -156,7 +156,7 @@ var tick = (elapsedTime, multiplier) => {
     let value_c2 = getQ2(b2.level);
     c = BigNumber.from(value_c1 * value_c2);
 
-    currency.value += dt * bonus *q;
+    currency.value += (dt * bonus * q);
 
     t += dt;
     if(t>BigNumber.from("1e9")){
@@ -179,9 +179,11 @@ var tick = (elapsedTime, multiplier) => {
 // EQUATIONS
 // -------------------------------------------------------------------------------
 var getPrimaryEquation = () => {
-    theory.primaryEquationHeight = 50;
-    let result = "\\dot{\\rho} = \\sqrt{q^2 + R^2 - I^2}\\\\";
+    theory.primaryEquationHeight = 60;
+    let result = "\\begin{array}{c}";
+    result += "\\dot{\\rho} = \\sqrt{q^2 + R^2 - I^2}\\\\";
     result += "e^{iq} = b\\cos(q) + ci\\sin(q)";
+    result += "\\end{array}";
     return result;
 }
 
@@ -198,9 +200,9 @@ var getTertiaryEquation = () => {
 
     result += "\\begin{matrix}q=";
     result += q.toString();
-    result += ",&R =";
+    result += ",\\;R =";
     result += "0.00";
-    result += ",&I =";
+    result += ",\\;I =";
     result += "0.00";
     result += "\\end{matrix}";
 
@@ -209,7 +211,7 @@ var getTertiaryEquation = () => {
 // -------------------------------------------------------------------------------
 
 var sqrt = (n) => (BigNumber.from(n)).sqrt();
-var get3DGraphPoint = () => swizzles[0]((state - center) * scale);
+var get3DGraphPoint = () => swizzles[0]((state - center) * scale) ;
 var getPublicationMultiplier = (tau) => tau.pow(0.164) / BigNumber.THREE;
 var getPublicationMultiplierFormula = (symbol) => "\\frac{{" + symbol + "}^{0.164}}{3}";
 var getTau = () => currency.value.pow(BigNumber.from(0.1));;

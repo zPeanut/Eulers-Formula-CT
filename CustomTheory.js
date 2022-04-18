@@ -13,8 +13,8 @@ var version = 1;
 var scale=0.2;
 var currency;
 var q1, q2;
-var b1, b2, b;
-var c1, c2, c;
+var b1, b2, R;
+var c1, c2, I;
 var t;
 var q = BigNumber.ONE;
 var q1Exp, q2Exp;
@@ -25,7 +25,9 @@ var achievement1, achievement2;
 var chapter1, chapter2;
 
 var state = new Vector3(0, 0, 0);
-var center = new Vector3(0, 0   , 0);
+var center = new Vector3(0, 0, 0);
+var defaultStates = [new Vector3(0, 15, 0), new Vector3(0, 0, 0), new Vector3(0, 30, 0)];
+var bounds = [new Vector3(0, 15, 0), new Vector3(0, 0, 0), new Vector3(0, 30, 0)];
 var swizzles = [(v) => new Vector3(v.y, v.z, v.x), (v) => new Vector3(v.y, v.z, v.x), (v) => new Vector3(v.x, v.y, v.z)];
 
 var init = () => {
@@ -150,28 +152,28 @@ var tick = (elapsedTime, multiplier) => {
 
     let value_b1 = getQ1(b1.level);
     let value_b2 = getQ2(b2.level);
-    b = BigNumber.from(value_b1 * value_b2);
+    let b = BigNumber.from(value_b1 * value_b2);
 
-    let value_c1 = getQ1(b1.level);
-    let value_c2 = getQ2(b2.level);
-    c = BigNumber.from(value_c1 * value_c2);
+    let value_c1 = getQ1(c1.level);
+    let value_c2 = getQ2(c2.level);
+    let c = BigNumber.from(value_c1 * value_c2);
 
-    currency.value += (dt * bonus * q);
-
-    t += dt;
-    if(t>BigNumber.from("1e9")){
-
-        theory.clearGraph();
-        t = BigNumber.ZERO;
-    }
+    t += dt / 15;
 
     let value_graph = BigNumber.from(currency.value / q);
-    let graph_y = (c * value_graph).sin().toNumber(); // cisin(q)
-    let graph_z = (b * value_graph).cos().toNumber(); // bcos(q)
+    I = c.toNumber() * value_graph.sin().toNumber(); // cisin(q)
+    R = b.toNumber() * value_graph.cos().toNumber(); // bcos(q)
+
+    currency.value += dt * bonus * sqrt(q**2 + R**2 - I**2);
 
     state.x = t.toNumber();
-    state.y = graph_y;
-    state.z = graph_z;
+    state.y = I;
+    state.z = R;
+    if (t > 5) {
+        t = 0;
+        theory.clearGraph();
+    }
+
 
     theory.invalidateTertiaryEquation();
 }
@@ -189,9 +191,10 @@ var getPrimaryEquation = () => {
 
 var getSecondaryEquation = () => {
     theory.secondaryEquationHeight = 60;
-    let result = "";
-    result += "\\dot{q} = q_1q_2\\quad\\dot{b} = b_1b_2\\quad\\dot{c} = c_1c_2\\\\";
-    result += "\\qquad\\quad\\quad\\enspace\\!" + theory.latexSymbol + "=\\max\\rho^{0.1}";
+    let result = "\\begin{array}{c}";
+    result += "\\dot{q} = q_1q_2\\quad\\dot{R} = b_1b_2\\cos(q)\\quad\\dot{I} = c_1c_2\\sin(q)\\\\";
+    result += theory.latexSymbol + "=\\max\\rho^{0.1}";
+    result += "\\end{array}"
     return result;
 }
 
@@ -201,9 +204,9 @@ var getTertiaryEquation = () => {
     result += "\\begin{matrix}q=";
     result += q.toString();
     result += ",\\;R =";
-    result += "0.00";
+    result += BigNumber.from(R).toString(4);
     result += ",\\;I =";
-    result += "0.00";
+    result += BigNumber.from(R).toString(4);
     result += "\\end{matrix}";
 
     return result;
@@ -211,7 +214,7 @@ var getTertiaryEquation = () => {
 // -------------------------------------------------------------------------------
 
 var sqrt = (n) => (BigNumber.from(n)).sqrt();
-var get3DGraphPoint = () => swizzles[0]((state - center) * scale) ;
+var get3DGraphPoint = () => swizzles[0]((state - center) * scale);
 var getPublicationMultiplier = (tau) => tau.pow(0.164) / BigNumber.THREE;
 var getPublicationMultiplierFormula = (symbol) => "\\frac{{" + symbol + "}^{0.164}}{3}";
 var getTau = () => currency.value.pow(BigNumber.from(0.1));;

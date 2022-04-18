@@ -14,9 +14,10 @@ var version = 1;
 var scale=0.2;
 var currency;
 var q1, q2;
+var k, kExp;
+var a1, a2, a, aTerm;
 var b1, b2, I;
 var c1, c2, R;
-var a1, a2, a, aTerm;
 var q1Exp, q2Exp;
 var t;
 var q = BigNumber.ONE;
@@ -39,7 +40,7 @@ var init = () => {
     {
         let getDesc = (level) => "q_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "q_1=" + getQ1(level).toString(0);
-        q1 = theory.createUpgrade(0, currency, new FirstFreeCost(new ExponentialCost(15, Math.log2(2))));
+        q1 = theory.createUpgrade(0, currency, new FirstFreeCost(new ExponentialCost(15, Math.log2(5))));
         q1.getDescription = (_) => Utils.getMath(getDesc(q1.level));
         q1.getInfo = (amount) => Utils.getMathTo(getDesc(q1.level), getDesc(q1.level + amount))
     }
@@ -48,16 +49,27 @@ var init = () => {
     {
         let getDesc = (level) => "q_2=2^{" + level + "}";
         let getInfo = (level) => "q_2=" + getQ2(level).toString(0);
-        q2 = theory.createUpgrade(1, currency, new ExponentialCost(5, Math.log2(10)));
+        q2 = theory.createUpgrade(1, currency, new ExponentialCost(5, Math.log2(100) + 2.3));
         q2.getDescription = (_) => Utils.getMath(getDesc(q2.level));
         q2.getInfo = (amount) => Utils.getMathTo(getInfo(q2.level), getInfo(q2.level + amount));
+    }
+
+
+    // k
+    {
+        let getDesc = (level) => "k=" + getQ1(level).toString(0);
+        let getInfo = (level) => "k=" + getQ1(level).toString(0);
+        k = theory.createUpgrade(2, currency, new ExponentialCost(20, Math.log2(8.5)));
+        k.level = 1;
+        k.getDescription = (_) => Utils.getMath(getDesc(k.level));
+        k.getInfo = (amount) => Utils.getMathTo(getDesc(k.level), getDesc(k.level + amount));
     }
 
     // b1
     {
         let getDesc = (level) => "b_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "b_1=" + getQ1(level).toString(0);
-        b1 = theory.createUpgrade(2, currency, new ExponentialCost(20, 1.5));
+        b1 = theory.createUpgrade(3, currency, new ExponentialCost(10000, Math.log2(150)));
         b1.level = 1;
         b1.getDescription = (_) => Utils.getMath(getDesc(b1.level));
         b1.getInfo = (amount) => Utils.getMathTo(getDesc(b1.level), getDesc(b1.level + amount));
@@ -67,7 +79,7 @@ var init = () => {
     {
         let getDesc = (level) => "b_2=2^{" + level + "}";
         let getInfo = (level) => "b_2=" + getQ2(level).toString(0);
-        b2 = theory.createUpgrade(3, currency, new ExponentialCost(50, Math.log2(10)));
+        b2 = theory.createUpgrade(4, currency, new ExponentialCost(50000, Math.log2(250) + 3.6));
         b2.getDescription = (_) => Utils.getMath(getDesc(b2.level));
         b2.getInfo = (amount) => Utils.getMathTo(getInfo(b2.level), getInfo(b2.level + amount));
     }
@@ -77,7 +89,7 @@ var init = () => {
     {
         let getDesc = (level) => "c_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "c_1=" + getQ1(level).toString(0);
-        c1 = theory.createUpgrade(4, currency, new ExponentialCost(20, 1.5));
+        c1 = theory.createUpgrade(5, currency, new ExponentialCost(200000, Math.log2(10)));
         c1.level = 1;
         c1.getDescription = (_) => Utils.getMath(getDesc(c1.level));
         c1.getInfo = (amount) => Utils.getMathTo(getDesc(c1.level), getDesc(c1.level + amount));
@@ -87,7 +99,7 @@ var init = () => {
     {
         let getDesc = (level) => "c_2=2^{" + level + "}";
         let getInfo = (level) => "c_2=" + getQ2(level).toString(0);
-        c2 = theory.createUpgrade(5, currency, new ExponentialCost(50, Math.log2(10)));
+        c2 = theory.createUpgrade(6, currency, new ExponentialCost(5000000, Math.log2(150) + 3.6));
         c2.getDescription = (_) => Utils.getMath(getDesc(c2.level));
         c2.getInfo = (amount) => Utils.getMathTo(getInfo(c2.level), getInfo(c2.level + amount));
     }
@@ -96,7 +108,7 @@ var init = () => {
     {
         let getDesc = (level) => "a_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "a_1=" + getQ1(level).toString(0);
-        a1 = theory.createUpgrade(6, currency, new ExponentialCost(20, 1.5));
+        a1 = theory.createUpgrade(7, currency, new ExponentialCost(2000, 50));
         a1.level = 1;
         a1.getDescription = (_) => Utils.getMath(getDesc(a1.level));
         a1.getInfo = (amount) => Utils.getMathTo(getDesc(a1.level), getDesc(a1.level + amount));
@@ -106,7 +118,7 @@ var init = () => {
     {
         let getDesc = (level) => "a_2=2^{" + level + "}";
         let getInfo = (level) => "a_2=" + getQ2(level).toString(0);
-        a2 = theory.createUpgrade(7, currency, new ExponentialCost(50, Math.log2(10)));
+        a2 = theory.createUpgrade(8, currency, new ExponentialCost(5000000, 150.5));
         a2.getDescription = (_) => Utils.getMath(getDesc(a2.level));
         a2.getInfo = (amount) => Utils.getMathTo(getInfo(a2.level), getInfo(a2.level + amount));
     }
@@ -135,17 +147,10 @@ var init = () => {
     }
 
     {
-        q1Exp = theory.createMilestoneUpgrade(2, 3);
-        q1Exp.description = Localization.getUpgradeIncCustomExpDesc("q_1", "0.1");
-        q1Exp.info = Localization.getUpgradeIncCustomExpInfo("q_1", "0.1");
-        q1Exp.boughtOrRefunded = (_) => { theory.invalidateSecondaryEquation(); }
-    }
-
-    {
-        q2Exp = theory.createMilestoneUpgrade(3, 2);
-        q2Exp.description = Localization.getUpgradeIncCustomExpDesc("q_2", "0.05");
-        q2Exp.info = Localization.getUpgradeIncCustomExpInfo("q_q", "0.05");
-        q2Exp.boughtOrRefunded = (_) => { theory.invalidateSecondaryEquation(); }
+        kExp = theory.createMilestoneUpgrade(2, 5);
+        kExp.description = Localization.getUpgradeIncCustomExpDesc("k", "0.05");
+        kExp.info = Localization.getUpgradeIncCustomExpInfo("k", "0.05");
+        kExp.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); }
     }
 
     /*
@@ -173,17 +178,19 @@ var updateAvailability = () => {
     c2.isAvailable = dimension.level > 1;
     aTerm.isAvailable = dimension.level > 1;
     a1.isAvailable = aTerm.level != 0;
-    a2.isAvailable = aTerm.level != 0;
+    a2.isAvailable = aTerm.level > 1;
 }
 
 var tick = (elapsedTime, multiplier) => {
     let dt = BigNumber.from(elapsedTime * multiplier);
     let bonus = theory.publicationMultiplier;
 
-    let value_q1 = getQ1(q1.level).pow(getQ1Exponent(q1Exp.level));
-    let value_q2 = getQ2(q2.level).pow(getQ2Exponent(q2Exp.level));
+    let value_q1 = getQ1(q1.level);
+    let value_q2 = getQ2(q2.level);
     let dq = dt * value_q1 * value_q2;
     q += dq;
+
+    let value_k = getQ1(k.level).pow(getKExponent(kExp.level));
 
     let value_b1 = getQ1(b1.level);
     let value_b2 = getQ2(b2.level);
@@ -198,19 +205,19 @@ var tick = (elapsedTime, multiplier) => {
     a = BigNumber.from(value_a1 * value_a2);
 
     let baseCurrencyMultiplier = dt * bonus * (aTerm.level !== 0 ? (a / 100) : 1);
-    if(value_q1 === BigNumber.ZERO) {
+    if(value_q1 == BigNumber.ZERO) {
         currency.value = 0;
     } else {
         t += dt / 10;
         switch (equationLevel) {
             case 0:
-                currency.value += baseCurrencyMultiplier * q;
+                currency.value += baseCurrencyMultiplier * value_k * q;
                 break;
             case 1:
-                currency.value += baseCurrencyMultiplier * sqrt(q ** 2 + R ** 2);
+                currency.value += baseCurrencyMultiplier * sqrt(value_k * (q ** 2) + R ** 2);
                 break;
             case 2:
-                currency.value += (baseCurrencyMultiplier * sqrt(q ** 2 + R ** 2 - I ** 2));
+                currency.value += (baseCurrencyMultiplier * sqrt(value_k * (q ** 2) + R ** 2 - I ** 2));
                 break;
         }
     }
@@ -218,8 +225,8 @@ var tick = (elapsedTime, multiplier) => {
     I = (b.toNumber() * value_graph.cos()).toNumber();
     R = (c.toNumber() * value_graph.sin()).toNumber();
     state.x = t.toNumber();
-    state.y = R;
-    state.z = I;
+    state.y = R / 2;
+    state.z = I / 2;
 
     if(t > 10) {
         t = 0;
@@ -234,6 +241,10 @@ var tick = (elapsedTime, multiplier) => {
 var getPrimaryEquation = () => {
     theory.primaryEquationHeight = 60;
     let result = "\\begin{array}{c}\\dot{\\rho} = ";
+    let kxStr = "k";
+    if(kExp.level != 0) {
+        kxStr += "^{" + getKExponent(kExp.level).toString(2) + "}";
+    }
     switch (aTerm.level) {
         case 0:
             result += ""
@@ -243,19 +254,19 @@ var getPrimaryEquation = () => {
             break;
         case 2:
             result += "\\frac{a_1a_2}{100}";
-            break;4
+            break;
     }
     switch(dimension.level) {
         case 0:
-            result += "q\\\\";
+            result += kxStr + "q\\\\";
             result += "e^{iq} = \\cos(q) + i\\sin(q)";
             break;
         case 1:
-            result += "\\sqrt{q^2 + R^2}\\\\";
+            result += "\\sqrt{" + kxStr + "q^2 + R^2}\\\\";
             result += "e^{iq} = b\\cos(q) + i\\sin(q)";
             break;
         case 2:
-            result += "\\sqrt{q^2 + R^2 - I^2}\\\\";
+            result += "\\sqrt{" + kxStr + "q^2 + R^2 - I^2}\\\\";
             result += "e^{iq} = b\\cos(q) + ci\\sin(q)";
             break;
     }
@@ -265,25 +276,17 @@ var getPrimaryEquation = () => {
 }
 
 var getSecondaryEquation = () => {
-    theory.secondaryEquationHeight = 60;
+    theory.secondaryEquationHeight = 50;
     let result = "\\begin{array}{c}";
-    let q1Ex = "";
-    let q2Ex = "";
-    if(q1Exp.level != 0) {
-        q1Ex = getQ1Exponent(q1Exp.level).toString(1);
-    }
-    if(q2Exp.level != 0) {
-        q2Ex = getQ1Exponent(q2Exp.level).toString(1);
-    }
     switch(dimension.level) {
         case 0:
-            result += "\\dot{q} = q_1^{" + q1Ex + "}q_2^{" + q2Ex + "}\\\\";
+            result += "\\dot{q} = q_1q_2\\\\";
             break;
         case 1:
-            result += "\\dot{q} = q_1^{" + q1Ex + "}q_2^{" + q2Ex + "}\\quad\\dot{R} = b_1b_2\\cos(q)\\\\";
+            result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(q)\\\\";
             break;
         case 2:
-            result += "\\dot{q} = q_1^{" + q1Ex + "}q_2^{" + q2Ex + "}\\quad\\dot{R} = b_1b_2\\cos(q)\\quad\\dot{I} = c_1c_2\\sin(q)\\\\";
+            result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(q),\\quad\\dot{I} = c_1c_2\\sin(q)\\\\";
             break;
     }
     result += theory.latexSymbol + "=\\max\\rho^{0.1}";
@@ -314,7 +317,6 @@ var getTau = () => currency.value.pow(BigNumber.from(0.1));
 
 var getQ1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 0);
 var getQ2 = (level) => BigNumber.TWO.pow(level);
-var getQ1Exponent = (level) => BigNumber.from(1 + 0.1 * level);
-var getQ2Exponent = (level) => BigNumber.from(1 + 0.05 * level);
+var getKExponent = (level) => BigNumber.from(1 + 0.05 * level);
 
 init();

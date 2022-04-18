@@ -164,7 +164,11 @@ var tick = (elapsedTime, multiplier) => {
     I = c.toNumber() * value_graph.sin().toNumber(); // cisin(q)
     R = b.toNumber() * value_graph.cos().toNumber(); // bcos(q)
 
-    currency.value += dt * bonus * sqrt(q**2 + R**2 - I**2);
+    if(value_q1 !== BigNumber.ZERO) {
+        currency.value += dt * bonus * sqrt(q ** 2 + R ** 2 - I ** 2);
+    } else {
+        currency.value = 0;
+    }
 
     state.x = t.toNumber();
     state.y = I;

@@ -21,7 +21,6 @@ var graph_t;
 var q;
 var dimension;
 var equationLevel = 0;
-var array_R, array_I;
 var max_R, max_I;
 var value_graph;
 var maxCurrency;
@@ -32,8 +31,6 @@ var swizzles = [(v) => new Vector3(v.y, v.z, v.x), (v) => new Vector3(v.y, v.z, 
 
 var init = () => {
     scale = 0.2;
-    array_R = [];
-    array_I = [];
     currency = theory.createCurrency();
     currency_R = theory.createCurrency("R", "R");
     currency_I = theory.createCurrency("I", "I");
@@ -41,6 +38,8 @@ var init = () => {
     graph_t = BigNumber.ZERO;
     t = BigNumber.ZERO
     maxCurrency = BigNumber.ZERO;
+    max_R = BigNumber.ZERO;
+    max_I = BigNumber.ZERO;
     q = BigNumber.ONE;
 
     // Regular Upgrades
@@ -220,6 +219,8 @@ var tick = (elapsedTime, multiplier) => {
 
     R = BigNumber.from(b * value_graph.cos()); // b * cos(t) - real part of solution
     I = BigNumber.from(c * value_graph.sin()); // c * i * sin(t) - "imaginary" part of solution
+    max_R = max_R.max(R);
+    max_I = max_I.max(I);
 
     let baseCurrencyMultiplier = dt * bonus * (aTerm.level !== 0 ? a : BigNumber.ONE);
     currency_R.value += baseCurrencyMultiplier * R.abs() ** 2;
@@ -233,10 +234,10 @@ var tick = (elapsedTime, multiplier) => {
                 currency.value += baseCurrencyMultiplier * t * q;
                 break;
             case 1:
-                currency.value += baseCurrencyMultiplier * (t * BigNumber.from(q).pow(BigNumber.TWO) + (currency_R.value ** 2).sqrt());
+                currency.value += baseCurrencyMultiplier * (t * q.pow(BigNumber.TWO) + (currency_R.value ** 2).sqrt());
                 break;
             case 2:
-                currency.value += (baseCurrencyMultiplier * (t * BigNumber.from(q).pow(BigNumber.TWO) + (currency_R.value ** 2) - (currency_I.value ** 2)).sqrt());
+                currency.value += (baseCurrencyMultiplier * (t * q.pow(BigNumber.TWO) + (currency_R.value ** 2) + (currency_I.value ** 2)).sqrt());
                 break;
         }
         maxCurrency = maxCurrency.max(currency.value);
@@ -246,14 +247,6 @@ var tick = (elapsedTime, multiplier) => {
     state.y = R.toNumber();
     state.z = I.toNumber();
 
-    if(R != 0) {
-        array_R.push(BigNumber.from(R).toString(2));
-    }
-    if(I != 0) {
-        array_I.push(BigNumber.from(I).toString(2));
-    }
-    max_R = Math.max.apply(Math, array_R);
-    max_I = Math.max.apply(Math, array_I);
 
     if(graph_t > 8) {
         graph_t = 0;
@@ -300,7 +293,7 @@ var getPrimaryEquation = () => {
             result += "G(t) = b\\cos(t) + i\\sin(t)";
             break;
         case 2:
-            result += "\\sqrt{tq^2 + R^2 - I^2}\\\\";
+            result += "\\sqrt{tq^2 + R^2 + I^2}\\\\";
             result += "G(t) = b\\cos(t) + ci\\sin(t)";
             break;
     }
@@ -329,12 +322,10 @@ var getSecondaryEquation = () => {
 }
 
 var getTertiaryEquation = () => {
-    let high = Math.max.apply(Math, array_R);
-    let high2 = Math.max.apply(Math, array_I);
     let result = "";//"\\text{q: " + q + " | max: " + maxCurrency + " | t: " + t + "}";
 
-    result += "\\begin{matrix}q=";
-    result += ""//q.toString();
+    result += "\\begin{matrix}maxR max I=";
+    result += max_R.toString() + " /" + max_I.toString();
     result += ",\\;R =";
     result += BigNumber.from(R).toString(2);
     result += ",\\;I =";

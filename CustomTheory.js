@@ -2,13 +2,13 @@
 import { Localization } from "./api/Localization";
 import { BigNumber } from "./api/BigNumber";
 import {QuaternaryEntry, theory} from "./api/Theory";
-import { Utils } from "./api/Utils";
+import {log, Utils} from "./api/Utils";
 import {GraphQuality} from "./api/Settings";
 
 var id = "my_custom_theory_id";
 var name = "Euler's Formula";
-var description = "A basic theory.";
-var authors = "! :D";
+var description = "A theory about Euler's formula.";
+var authors = "peanut & Snaeky";
 var version = 1;
 
 var scale;
@@ -22,8 +22,9 @@ var graph_t;
 var dimension;
 var equationLevel = 0;
 var max_R, max_I;
-var value_graph;
+var value_graph, value_t;
 var maxCurrency;
+var quaternaryEntries;
 
 var state = new Vector3(0, 0, 0);
 var center = new Vector3(0, 0, 0);
@@ -36,10 +37,12 @@ var init = () => {
     currency_I = theory.createCurrency("I", "I");
 
     graph_t = BigNumber.ZERO;
-    t = BigNumber.ZERO
+    value_t = BigNumber.ZERO;
     maxCurrency = BigNumber.ZERO;
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
+
+    quaternaryEntries = [];
 
     // Regular Upgrades
 
@@ -47,7 +50,7 @@ var init = () => {
     {
         let getDesc = (level) => "q_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "q_1=" + getQ1(level).toString(0);
-        q1 = theory.createUpgrade(0, currency, new FirstFreeCost(new ExponentialCost(15, Math.log2(5))));
+        q1 = theory.createUpgrade(0, currency, new FirstFreeCost(new ExponentialCost(15, 3.36)));
         q1.getDescription = (_) => Utils.getMath(getDesc(q1.level));
         q1.getInfo = (amount) => Utils.getMathTo(getDesc(q1.level), getDesc(q1.level + amount));
     }
@@ -56,7 +59,7 @@ var init = () => {
     {
         let getDesc = (level) => "q_2=2^{" + level + "}";
         let getInfo = (level) => "q_2=" + getQ2(level).toString(0);
-        q2 = theory.createUpgrade(1, currency, new ExponentialCost(5, Math.log2(100) + 2.3));
+        q2 = theory.createUpgrade(1, currency, new ExponentialCost(5, Math.log2(20)));
         q2.getDescription = (_) => Utils.getMath(getDesc(q2.level));
         q2.getInfo = (amount) => Utils.getMathTo(getInfo(q2.level), getInfo(q2.level + amount));
     }
@@ -65,20 +68,18 @@ var init = () => {
     {
         let getDesc = (level) => "b_1=" + getB1(level).toString(0);
         let getInfo = (level) => "b_1=" + getB1(level).toString(0);
-        b1 = theory.createUpgrade(2, currency_R, new FirstFreeCost(ExponentialCost(20, Math.log2(5))));
+        b1 = theory.createUpgrade(2, currency_R, new FirstFreeCost(ExponentialCost(20, Math.log2(200))));
         b1.getDescription = (_) => Utils.getMath(getDesc(b1.level));
         b1.getInfo = (amount) => Utils.getMathTo(getDesc(b1.level), getDesc(b1.level + amount));
-        b1.boughtOrRefunded = (_) => checkForScale();
     }
 
     // b2
     {
-        let getDesc = (level) => "b_2=2^{" + level + "}";
-        let getInfo = (level) => "b_2=" + getQ2(level).toString(0);
-        b2 = theory.createUpgrade(3, currency_R, new ExponentialCost(500, Math.log2(10)));
+        let getDesc = (level) => "b_2=1.05^{" + level + "}";
+        let getInfo = (level) => "b_2=" + getB2(level).toString(2);
+        b2 = theory.createUpgrade(3, currency_R, new ExponentialCost(100, Math.log2(2)));
         b2.getDescription = (_) => Utils.getMath(getDesc(b2.level));
         b2.getInfo = (amount) => Utils.getMathTo(getInfo(b2.level), getInfo(b2.level + amount));
-        b2.boughtOrRefunded = (_) => checkForScale();
     }
 
 
@@ -86,20 +87,18 @@ var init = () => {
     {
         let getDesc = (level) => "c_1=" + getC1(level).toString(0);
         let getInfo = (level) => "c_1=" + getC1(level).toString(0);
-        c1 = theory.createUpgrade(4, currency_I, new FirstFreeCost(new ExponentialCost(20, Math.log2(2))));
+        c1 = theory.createUpgrade(4, currency_I, new FirstFreeCost(new ExponentialCost(20, Math.log2(200))));
         c1.getDescription = (_) => Utils.getMath(getDesc(c1.level));
         c1.getInfo = (amount) => Utils.getMathTo(getDesc(c1.level), getDesc(c1.level + amount));
-        c1.boughtOrRefunded = (_) => checkForScale();
     }
 
     // c2
     {
-        let getDesc = (level) => "c_2=2^{" + level + "}";
-        let getInfo = (level) => "c_2=" + getQ2(level).toString(0);
-        c2 = theory.createUpgrade(5, currency_I, new ExponentialCost(500, Math.log2(5)));
+        let getDesc = (level) => "c_2=1.05^{" + level + "}";
+        let getInfo = (level) => "c_2=" + getC2(level).toString(0);
+        c2 = theory.createUpgrade(5, currency_I, new ExponentialCost(100, Math.log2(2)));
         c2.getDescription = (_) => Utils.getMath(getDesc(c2.level));
         c2.getInfo = (amount) => Utils.getMathTo(getInfo(c2.level), getInfo(c2.level + amount));
-        c2.boughtOrRefunded = (_) => checkForScale();
     }
 
     // a1
@@ -115,7 +114,7 @@ var init = () => {
     {
         let getDesc = (level) => "a_2=2^{" + level + "}";
         let getInfo = (level) => "a_2=" + getQ2(level).toString(0);
-        a2 = theory.createUpgrade(7, currency_R, new ExponentialCost(5000000, 150.5));
+        a2 = theory.createUpgrade(7, currency_R, new ExponentialCost(500, 15));
         a2.getDescription = (_) => Utils.getMath(getDesc(a2.level));
         a2.getInfo = (amount) => Utils.getMathTo(getInfo(a2.level), getInfo(a2.level + amount));
     }
@@ -124,7 +123,7 @@ var init = () => {
     {
         let getDesc = (level) => "a_3=2^{" + level + "}";
         let getInfo = (level) => "a_3=" + getQ2(level).toString(0);
-        a3 = theory.createUpgrade(8, currency_I, new ExponentialCost(5000000, 150.5));
+        a3 = theory.createUpgrade(8, currency_I, new ExponentialCost(500, 15));
         a3.getDescription = (_) => Utils.getMath(getDesc(a3.level));
         a3.getInfo = (amount) => Utils.getMathTo(getInfo(a3.level), getInfo(a3.level + amount));
     }
@@ -133,6 +132,14 @@ var init = () => {
     theory.createPublicationUpgrade(0, currency, 0.1);
     theory.createBuyAllUpgrade(1, currency, 1);
     theory.createAutoBuyerUpgrade(2, currency, 1);
+
+    {
+        let getInfo = (level) => "t=" + getT(level).toString(0);
+        t = theory.createPermanentUpgrade(3, currency, new ExponentialCost(1, Math.log2(1)));
+        t.getDescription = (_) => " $\\uparrow$ t multiplier by 1";
+        t.getInfo = (amount) => Utils.getMathTo(getInfo(t.level), getInfo(t.level + amount));
+        t.maxLevel = 8;
+    }
 
     //// Milestone Upgrades
     theory.setMilestoneCost(new LinearCost(0.1, 0.1));
@@ -198,8 +205,9 @@ var tick = (elapsedTime, multiplier) => {
     let value_q1 = getQ1(q1.level);
     let value_q2 = getQ2(q2.level);
 
+    let value_t2 = getT(t.level);
     if(q1.level != 0) {
-        t += (dt / 5);
+        value_t = value_t + ((1+value_t2)*dt / 1.5)
     }
 
     q += value_q1 * value_q2 * dt * bonus;
@@ -209,7 +217,7 @@ var tick = (elapsedTime, multiplier) => {
     let b = BigNumber.from(value_b1 * value_b2);
 
     let value_c1 = getC1(c1.level);
-    let value_c2 = getB2(c2.level);
+    let value_c2 = getC2(c2.level);
     let c = BigNumber.from(value_c1 * value_c2);
 
     let value_a1 = getA1(a1.level);
@@ -217,7 +225,7 @@ var tick = (elapsedTime, multiplier) => {
     let value_a3 = getA3(a3.level);
     a = BigNumber.from(value_a1 * value_a2 * value_a3) / BigNumber.HUNDRED;
 
-    value_graph = t;
+    value_graph = value_t * ((1+currency.value).log() / 10);
 
     R = BigNumber.from(b * value_graph.cos()); // b * cos(t) - real part of solution
     I = BigNumber.from(c * value_graph.sin()); // c * i * sin(t) - "imaginary" part of solution
@@ -230,16 +238,16 @@ var tick = (elapsedTime, multiplier) => {
     if(value_q1 == BigNumber.ZERO) {
         currency.value = 0;
     } else {
-        graph_t += dt / 10;
+        graph_t += dt / 2;
         switch (equationLevel) {
             case 0:
-                currency.value += baseCurrencyMultiplier * t * q;
+                currency.value += baseCurrencyMultiplier * value_t * q;
                 break;
             case 1:
-                currency.value += baseCurrencyMultiplier * (t * q.pow(BigNumber.TWO) + (currency_R.value ** 2).sqrt());
+                currency.value += baseCurrencyMultiplier * (value_t * q.pow(BigNumber.TWO) + (currency_R.value ** 2).sqrt());
                 break;
             case 2:
-                currency.value += (baseCurrencyMultiplier * (t * q.pow(BigNumber.TWO) + (currency_R.value ** 2) + (currency_I.value ** 2)).sqrt());
+                currency.value += (baseCurrencyMultiplier * (value_t * q.pow(BigNumber.TWO) + (currency_R.value ** 2) + (currency_I.value ** 2)).sqrt());
                 break;
         }
         maxCurrency = maxCurrency.max(currency.value);
@@ -249,17 +257,18 @@ var tick = (elapsedTime, multiplier) => {
     state.y = R.toNumber();
     state.z = I.toNumber();
 
-
-    if(graph_t > 8) {
+    if(graph_t > 32 + ((1 / 100) * (max_R / 1000))) {
         graph_t = 0;
-        checkForScale();
         theory.clearGraph();
     }
     theory.invalidateTertiaryEquation();
+    theory.invalidateQuaternaryValues();
+    checkForScale();
 }
 
 var checkForScale = () => {
     if(max_R > (8 / scale) / 4 || max_I > (8 / scale) / 4) { // scale down everytime R or I gets larger than the screen
+        graph_t = 0;
         theory.clearGraph();
         let old_scale = scale; // save previous scale
         scale = (50 / 100) * old_scale // scale down by 50%
@@ -291,11 +300,11 @@ var getPrimaryEquation = () => {
             result += "G(t) = \\cos(t) + i\\sin(t)";
             break;
         case 1:
-            result += "\\sqrt{tq^2 + R^2}\\\\";
+            result += "\\sqrt{tq^2 + R_2^{\\;2}\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + i\\sin(t)";
             break;
         case 2:
-            result += "\\sqrt{tq^2 + R^2 + I^2}\\\\";
+            result += "\\sqrt{\\text{\\,}tq^2 + R_2^{\\;2}\\; + \\; I_3^{\\;2}\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + ci\\sin(t)";
             break;
     }
@@ -328,8 +337,6 @@ var getTertiaryEquation = () => {
 
     result += "\\begin{matrix}q=";
     result += q.toString();
-    result += ",\\;t = ";
-    result += t.toString();
     result += ",\\;R =";
     result += BigNumber.from(R).toString(2);
     result += ",\\;I =";
@@ -338,6 +345,35 @@ var getTertiaryEquation = () => {
 
     return result;
 }
+
+var getQuaternaryEntries = () => {
+
+    // this is used for debug
+
+    if(quaternaryEntries.length == 0) {
+        quaternaryEntries.push(new QuaternaryEntry("sc", null));
+        quaternaryEntries.push(new QuaternaryEntry("R^*", null));
+        quaternaryEntries.push(new QuaternaryEntry("I^*", null));
+        quaternaryEntries.push(new QuaternaryEntry("I_s", null));
+        quaternaryEntries.push(new QuaternaryEntry("\\rho^*", null));
+        quaternaryEntries.push(new QuaternaryEntry("t", null));
+        quaternaryEntries.push(new QuaternaryEntry("g_t", null));
+        quaternaryEntries.push(new QuaternaryEntry("m_t", null));
+    }
+    quaternaryEntries[0].value = scale;
+    quaternaryEntries[1].value = max_R;
+    quaternaryEntries[2].value = max_I;
+    quaternaryEntries[3].value = (8 / scale) / 4;
+    quaternaryEntries[4].value = maxCurrency;
+    quaternaryEntries[5].value = value_t;
+    quaternaryEntries[6].value = graph_t;
+    quaternaryEntries[7].value = 32 + ((1 / 100) * (max_R / 1000));
+
+    return quaternaryEntries;
+}
+
+
+
 // -------------------------------------------------------------------------------
 
 var get3DGraphPoint = () => swizzles[0]((state - center) * scale);
@@ -353,9 +389,9 @@ var getA1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 var getA2 = (level) => BigNumber.TWO.pow(level);
 var getA3 = (level) => BigNumber.TWO.pow(level);
 var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getB2 = (level) => BigNumber.TWO.pow(level);
+var getB2 = (level) => BigNumber.from(1.05).pow(level);
 var getC1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getC2 = (level) => BigNumber.TWO.pow(level);
-var getKExponent = (level) => BigNumber.from(1 + 0.05 * level);
+var getC2 = (level) => BigNumber.from(1.05).pow(level);
+var getT = (level) => Utils.getStepwisePowerSum(level, 1.01, 10, 1);
 
 init();

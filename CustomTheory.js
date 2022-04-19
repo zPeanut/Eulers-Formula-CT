@@ -11,7 +11,7 @@ var description = "A basic theory.";
 var authors = "! :D";
 var version = 1;
 
-var scale=0.2;
+var scale;
 var currency, currency_R, currency_I;
 var q1, q2;
 var n, nExp;
@@ -23,6 +23,8 @@ var t;
 var q = BigNumber.ONE;
 var dimension;
 var equationLevel = 0;
+var array_R, array_I;
+var max_R, max_I;
 
 
 var state = new Vector3(0, 0, 0);
@@ -30,6 +32,9 @@ var center = new Vector3(0, 0, 0);
 var swizzles = [(v) => new Vector3(v.y, v.z, v.x), (v) => new Vector3(v.y, v.z, v.x), (v) => new Vector3(v.x, v.y, v.z)];
 
 var init = () => {
+    scale = 0.2;
+    array_R = [];
+    array_I = [];
     currency = theory.createCurrency();
     currency_R = theory.createCurrency("R", "R");
     currency_I = theory.createCurrency("I", "I");
@@ -74,6 +79,7 @@ var init = () => {
         b1 = theory.createUpgrade(3, currency_R, new FirstFreeCost(ExponentialCost(20, Math.log2(5))));
         b1.getDescription = (_) => Utils.getMath(getDesc(b1.level));
         b1.getInfo = (amount) => Utils.getMathTo(getDesc(b1.level), getDesc(b1.level + amount));
+        b1.boughtOrRefunded = (_) => checkForScale();
     }
 
     // b2
@@ -83,6 +89,7 @@ var init = () => {
         b2 = theory.createUpgrade(4, currency_R, new ExponentialCost(500, Math.log2(10)));
         b2.getDescription = (_) => Utils.getMath(getDesc(b2.level));
         b2.getInfo = (amount) => Utils.getMathTo(getInfo(b2.level), getInfo(b2.level + amount));
+        b2.boughtOrRefunded = (_) => checkForScale();
     }
 
 
@@ -93,6 +100,7 @@ var init = () => {
         c1 = theory.createUpgrade(5, currency_I, new FirstFreeCost(new ExponentialCost(20, Math.log2(2))));
         c1.getDescription = (_) => Utils.getMath(getDesc(c1.level));
         c1.getInfo = (amount) => Utils.getMathTo(getDesc(c1.level), getDesc(c1.level + amount));
+        c1.boughtOrRefunded = (_) => checkForScale();
     }
 
     // c2
@@ -102,6 +110,7 @@ var init = () => {
         c2 = theory.createUpgrade(6, currency_I, new ExponentialCost(500, Math.log2(5)));
         c2.getDescription = (_) => Utils.getMath(getDesc(c2.level));
         c2.getInfo = (amount) => Utils.getMathTo(getInfo(c2.level), getInfo(c2.level + amount));
+        c2.boughtOrRefunded = (_) => checkForScale();
     }
 
     // a1
@@ -204,7 +213,7 @@ var tick = (elapsedTime, multiplier) => {
     let dq = dt * value_q1 * value_q2;
     q += dq;
 
-    let value_k = getQ1(n.level).pow(getKExponent(nExp.level));
+    let value_n = getQ1(n.level).pow(getKExponent(nExp.level));
 
     let value_b1 = getQ1(b1.level);
     let value_b2 = getQ2(b2.level);
@@ -219,15 +228,25 @@ var tick = (elapsedTime, multiplier) => {
     let value_a3 = getQ2(a3.level);
     a = BigNumber.from(value_a1 * value_a2 * value_a3) / BigNumber.HUNDRED;
 
-    let value_graph = BigNumber.from(theory.tau.pow(1/0.1) / q);
+    let value_graph = BigNumber.from(theory.tau.pow(1/0.1) / q) / 2;
     R = (b.toNumber() * value_graph.cos()).toNumber(); // b * cos(q) - real part of solution
     I = (c.toNumber() * value_graph.sin()).toNumber(); // c * i * sin(q) - "imaginary" part of solution
     state.x = t.toNumber();
-    state.y = R / 2;
-    state.z = I / 2;
+    state.y = R;
+    state.z = I;
+    if(R != 0) {
+        array_R.push(BigNumber.from(R).toString(2));
+    }
+    if(I != 0) {
+        array_I.push(BigNumber.from(I).toString(2));
+    }
+    max_R = Math.max.apply(Math, array_R);
+    max_I = Math.max.apply(Math, array_I);
 
-    if(t > 10) {
+
+    if(t > 8) {
         t = 0;
+        checkForScale();
         theory.clearGraph();
     }
 
@@ -240,19 +259,25 @@ var tick = (elapsedTime, multiplier) => {
         t += dt / 10;
         switch (equationLevel) {
             case 0:
-                currency.value += baseCurrencyMultiplier * value_k * q;
+                currency.value += baseCurrencyMultiplier * value_n * q;
                 break;
             case 1:
-                currency.value += baseCurrencyMultiplier * sqrt(value_k * (q ** 2) + (currency_R.value ** 2));
+                currency.value += baseCurrencyMultiplier * sqrt(value_n * q ** 2 + (currency_R.value ** 2));
                 break;
             case 2:
-                currency.value += (baseCurrencyMultiplier * sqrt(value_k * (q ** 2) + (currency_R.value ** 2) - (currency_I.value ** 2)));
+                currency.value += (baseCurrencyMultiplier * sqrt(value_n * q ** 2 + (currency_R.value ** 2) - (currency_I.value ** 2)));
                 break;
         }
     }
-
-
     theory.invalidateTertiaryEquation();
+}
+
+var checkForScale = () => {
+    theory.clearGraph();
+    if(max_R > (8 / scale) / 4 || max_I > (8 / scale) / 4) { // scale down everytime R or I gets larger than the screen
+        let old_scale = scale; // save previous scale
+        scale = (50 / 100) * old_scale // scale down by 50%
+    }
 }
 
 // EQUATIONS
@@ -298,7 +323,7 @@ var getPrimaryEquation = () => {
 }
 
 var getSecondaryEquation = () => {
-    theory.secondaryEquationHeight = 50;
+    theory.secondaryEquationHeight = 70;
     let result = "\\begin{array}{c}";
     switch(dimension.level) {
         case 0:
@@ -308,7 +333,7 @@ var getSecondaryEquation = () => {
             result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(q)\\\\";
             break;
         case 2:
-            result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(q),\\quad\\dot{I} = c_1c_2\\sin(q)\\\\";
+            result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(q),\\quad\\dot{I} = -(ic_1c_2\\sin(q))^2\\\\";
             break;
     }
     result += theory.latexSymbol + "=\\max\\rho^{0.1}";
@@ -317,15 +342,17 @@ var getSecondaryEquation = () => {
 }
 
 var getTertiaryEquation = () => {
-    let result = "";
+    let high = Math.max.apply(Math, array_R);
+    let high2 = Math.max.apply(Math, array_I);
+    let result = "\\text{q: " + q.toString() + " | " + BigNumber.from(theory.tau.pow(1/0.1) / q) / 2 + " | scale: " + scale + " | maxR: " + high + " | maxI: " + high2 + "}";
 
-    result += "\\begin{matrix}q=";
+    /*result += "\\begin{matrix}q=";
     result += q.toString();
     result += ",\\;R =";
     result += BigNumber.from(R).toString(2);
     result += ",\\;I =";
     result += BigNumber.from(I).toString(2);
-    result += "\\end{matrix}";
+    result += "\\end{matrix}";*/
 
     return result;
 }

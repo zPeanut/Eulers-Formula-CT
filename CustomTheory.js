@@ -25,6 +25,9 @@ var dimension;
 var equationLevel = 0;
 var array_R, array_I;
 var max_R, max_I;
+var value_graph;
+var array_rho;
+var maxRho;
 
 
 var state = new Vector3(0, 0, 0);
@@ -35,6 +38,7 @@ var init = () => {
     scale = 0.2;
     array_R = [];
     array_I = [];
+    array_rho = [];
     currency = theory.createCurrency();
     currency_R = theory.createCurrency("R", "R");
     currency_I = theory.createCurrency("I", "I");
@@ -64,18 +68,17 @@ var init = () => {
 
     // n
     {
-        let getDesc = (level) => "n=" + getQ1(level).toString(0);
-        let getInfo = (level) => "n=" + getQ1(level).toString(0);
+        let getDesc = (level) => "n=" + getN(level).toString(0);
+        let getInfo = (level) => "n=" + getN(level).toString(0);
         n = theory.createUpgrade(2, currency, new ExponentialCost(20, Math.log2(8.5)));
-        n.level = 1;
         n.getDescription = (_) => Utils.getMath(getDesc(n.level));
         n.getInfo = (amount) => Utils.getMathTo(getDesc(n.level), getDesc(n.level + amount));
     }
 
     // b1
     {
-        let getDesc = (level) => "b_1=" + getQ1(level).toString(0);
-        let getInfo = (level) => "b_1=" + getQ1(level).toString(0);
+        let getDesc = (level) => "b_1=" + getB1(level).toString(0);
+        let getInfo = (level) => "b_1=" + getB1(level).toString(0);
         b1 = theory.createUpgrade(3, currency_R, new FirstFreeCost(ExponentialCost(20, Math.log2(5))));
         b1.getDescription = (_) => Utils.getMath(getDesc(b1.level));
         b1.getInfo = (amount) => Utils.getMathTo(getDesc(b1.level), getDesc(b1.level + amount));
@@ -95,8 +98,8 @@ var init = () => {
 
     // c1
     {
-        let getDesc = (level) => "c_1=" + getQ1(level).toString(0);
-        let getInfo = (level) => "c_1=" + getQ1(level).toString(0);
+        let getDesc = (level) => "c_1=" + getC1(level).toString(0);
+        let getInfo = (level) => "c_1=" + getC1(level).toString(0);
         c1 = theory.createUpgrade(5, currency_I, new FirstFreeCost(new ExponentialCost(20, Math.log2(2))));
         c1.getDescription = (_) => Utils.getMath(getDesc(c1.level));
         c1.getInfo = (amount) => Utils.getMathTo(getDesc(c1.level), getDesc(c1.level + amount));
@@ -115,8 +118,8 @@ var init = () => {
 
     // a1
     {
-        let getDesc = (level) => "a_1=" + getQ1(level).toString(0);
-        let getInfo = (level) => "a_1=" + getQ1(level).toString(0);
+        let getDesc = (level) => "a_1=" + getA1(level).toString(0);
+        let getInfo = (level) => "a_1=" + getA1(level).toString(0);
         a1 = theory.createUpgrade(7, currency, new FirstFreeCost(new ExponentialCost(2000, 50)));
         a1.getDescription = (_) => Utils.getMath(getDesc(a1.level));
         a1.getInfo = (amount) => Utils.getMathTo(getDesc(a1.level), getDesc(a1.level + amount));
@@ -142,7 +145,7 @@ var init = () => {
 
 
     // Permanent Upgrades
-    theory.createPublicationUpgrade(0, currency, 1);
+    theory.createPublicationUpgrade(0, currency, 1e10);
     theory.createBuyAllUpgrade(1, currency, 1);
     theory.createAutoBuyerUpgrade(2, currency, 1);
 
@@ -204,36 +207,40 @@ var updateAvailability = () => {
     currency_I.isAvailable = dimension.level > 1;
 }
 
+
+
 var tick = (elapsedTime, multiplier) => {
     let dt = BigNumber.from(elapsedTime * multiplier);
     let bonus = theory.publicationMultiplier;
+    array_rho.push(BigNumber.from(currency.value));
+    maxRho = BigNumber.from(Math.max.apply(Math, array_rho));
 
     let value_q1 = getQ1(q1.level);
     let value_q2 = getQ2(q2.level);
-    let dq = dt * value_q1 * value_q2;
+    let dq = dt * value_q1 * value_q2 ** 20;
     q += dq;
 
-    let value_n = getQ1(n.level).pow(getKExponent(nExp.level));
+    let value_n = getN(n.level).pow(getKExponent(nExp.level));
 
-    let value_b1 = getQ1(b1.level);
-    let value_b2 = getQ2(b2.level);
+    let value_b1 = getB1(b1.level);
+    let value_b2 = getB2(b2.level);
     let b = BigNumber.from(value_b1 * value_b2);
 
-    let value_c1 = getQ1(c1.level);
-    let value_c2 = getQ2(c2.level);
+    let value_c1 = getC1(c1.level);
+    let value_c2 = getB2(c2.level);
     let c = BigNumber.from(value_c1 * value_c2);
 
-    let value_a1 = getQ1(a1.level);
-    let value_a2 = getQ2(a2.level);
-    let value_a3 = getQ2(a3.level);
+    let value_a1 = getA1(a1.level);
+    let value_a2 = getA2(a2.level);
+    let value_a3 = getA3(a3.level);
     a = BigNumber.from(value_a1 * value_a2 * value_a3) / BigNumber.HUNDRED;
+    value_graph = BigNumber.from((maxRho / q) / 2);
+    R = BigNumber.from(b * value_graph.cos()); // b * cos(q) - real part of solution
+    I = BigNumber.from(c * value_graph.sin()); // c * i * sin(q) - "imaginary" part of solution
 
-    let value_graph = BigNumber.from(theory.tau.pow(1/0.1) / q) / 2;
-    R = (b.toNumber() * value_graph.cos()).toNumber(); // b * cos(q) - real part of solution
-    I = (c.toNumber() * value_graph.sin()).toNumber(); // c * i * sin(q) - "imaginary" part of solution
     state.x = t.toNumber();
-    state.y = R;
-    state.z = I;
+    state.y = R.toNumber();
+    state.z = I.toNumber();
     if(R != 0) {
         array_R.push(BigNumber.from(R).toString(2));
     }
@@ -272,9 +279,16 @@ var tick = (elapsedTime, multiplier) => {
     theory.invalidateTertiaryEquation();
 }
 
+var postPublish = () => {
+    scale = 0.2;
+    array_rho = [];
+    t = BigNumber.ZERO;
+    q = BigNumber.ONE;
+}
+
 var checkForScale = () => {
-    theory.clearGraph();
     if(max_R > (8 / scale) / 4 || max_I > (8 / scale) / 4) { // scale down everytime R or I gets larger than the screen
+        theory.clearGraph();
         let old_scale = scale; // save previous scale
         scale = (50 / 100) * old_scale // scale down by 50%
     }
@@ -344,7 +358,7 @@ var getSecondaryEquation = () => {
 var getTertiaryEquation = () => {
     let high = Math.max.apply(Math, array_R);
     let high2 = Math.max.apply(Math, array_I);
-    let result = "\\text{q: " + q.toString() + " | " + BigNumber.from(theory.tau.pow(1/0.1) / q) / 2 + " | scale: " + scale + " | maxR: " + high + " | maxI: " + high2 + "}";
+    let result = "\\text{q: " + q.toString() + " | " + (maxRho / q) / 2 + " | scale: " + scale + " | tau^{\\frac{1}{0.1}}: " + maxRho + " | maxRI: " + high + "/" + high2 + "}";
 
     /*result += "\\begin{matrix}q=";
     result += q.toString();
@@ -367,6 +381,14 @@ var getTau = () => currency.value.pow(BigNumber.from(0.1));
 
 var getQ1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 0);
 var getQ2 = (level) => BigNumber.TWO.pow(level);
+var getN = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
+var getA1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
+var getA2 = (level) => BigNumber.TWO.pow(level);
+var getA3 = (level) => BigNumber.TWO.pow(level);
+var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
+var getB2 = (level) => BigNumber.TWO.pow(level);
+var getC1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
+var getC2 = (level) => BigNumber.TWO.pow(level);
 var getKExponent = (level) => BigNumber.from(1 + 0.05 * level);
 
 init();

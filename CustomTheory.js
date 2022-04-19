@@ -71,7 +71,7 @@ var init = () => {
     {
         let getDesc = (level) => "b_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "b_1=" + getQ1(level).toString(0);
-        b1 = theory.createUpgrade(3, currency_R, new FirstFreeCost(ExponentialCost(20, Math.log2(2))));
+        b1 = theory.createUpgrade(3, currency_R, new FirstFreeCost(ExponentialCost(20, Math.log2(5))));
         b1.getDescription = (_) => Utils.getMath(getDesc(b1.level));
         b1.getInfo = (amount) => Utils.getMathTo(getDesc(b1.level), getDesc(b1.level + amount));
     }
@@ -220,11 +220,8 @@ var tick = (elapsedTime, multiplier) => {
     a = BigNumber.from(value_a1 * value_a2 * value_a3) / BigNumber.HUNDRED;
 
     let value_graph = BigNumber.from(theory.tau.pow(1/0.1) / q);
-    R = (b.toNumber() * value_graph.cos()).toNumber();
-    I = (c.toNumber() * value_graph.sin()).toNumber();
-    if(R == 0 && b1.level == 0 && !b1.isAvailable) {
-        b1.level = 0;
-    }
+    R = (b.toNumber() * value_graph.cos()).toNumber(); // b * cos(q) - real part of solution
+    I = (c.toNumber() * value_graph.sin()).toNumber(); // c * i * sin(q) - "imaginary" part of solution
     state.x = t.toNumber();
     state.y = R / 2;
     state.z = I / 2;
@@ -235,8 +232,8 @@ var tick = (elapsedTime, multiplier) => {
     }
 
     let baseCurrencyMultiplier = dt * bonus * (aTerm.level !== 0 ? a : 1);
-    currency_R.value += baseCurrencyMultiplier * Math.abs(R);
-    currency_I.value += baseCurrencyMultiplier * Math.abs(I);
+    currency_R.value += baseCurrencyMultiplier * (Math.abs(R)) ** 2;
+    currency_I.value += baseCurrencyMultiplier * (Math.abs(I)) ** 2;
     if(value_q1 == BigNumber.ZERO) {
         currency.value = 0;
     } else {

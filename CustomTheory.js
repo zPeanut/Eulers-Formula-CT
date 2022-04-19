@@ -197,9 +197,12 @@ var tick = (elapsedTime, multiplier) => {
     let bonus = theory.publicationMultiplier;
     let value_q1 = getQ1(q1.level);
     let value_q2 = getQ2(q2.level);
-    q = q + value_q1 * value_q2.pow(BigNumber.TEN) * dt * bonus;
 
-    t += dt;
+    if(q1.level != 0) {
+        t += (dt / 5);
+    }
+
+    q += value_q1 * value_q2 * dt * bonus;
 
     let value_b1 = getB1(b1.level);
     let value_b2 = getB2(b2.level);
@@ -214,7 +217,7 @@ var tick = (elapsedTime, multiplier) => {
     let value_a3 = getA3(a3.level);
     a = BigNumber.from(value_a1 * value_a2 * value_a3) / BigNumber.HUNDRED;
 
-    value_graph = BigNumber.from(t);
+    value_graph = t;
 
     R = BigNumber.from(b * value_graph.cos()); // b * cos(t) - real part of solution
     I = BigNumber.from(c * value_graph.sin()); // c * i * sin(t) - "imaginary" part of solution
@@ -306,13 +309,13 @@ var getSecondaryEquation = () => {
     let result = "\\begin{array}{c}";
     switch(dimension.level) {
         case 0:
-            result += "\\dot{q} = q_1q_2\\\\";
+            result += "\\dot{q} = tq_1q_2\\\\";
             break;
         case 1:
-            result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(t)\\\\";
+            result += "\\dot{q} = tq_1q_2,\\quad\\dot{R} = b_1b_2\\cos(t)\\\\";
             break;
         case 2:
-            result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(t),\\quad\\dot{I} = -(ic_1c_2\\sin(t))^2\\\\";
+            result += "\\dot{q} = tq_1q_2,\\quad\\dot{R} = b_1b_2\\cos(t),\\quad\\dot{I} = -(ic_1c_2\\sin(t))^2\\\\";
             break;
     }
     result += theory.latexSymbol + "=\\max\\rho^{0.1}";
@@ -325,6 +328,8 @@ var getTertiaryEquation = () => {
 
     result += "\\begin{matrix}q=";
     result += q.toString();
+    result += ",\\;t = ";
+    result += t.toString();
     result += ",\\;R =";
     result += BigNumber.from(R).toString(2);
     result += ",\\;I =";

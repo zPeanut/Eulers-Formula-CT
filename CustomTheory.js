@@ -17,8 +17,8 @@ var q1, q2, t;
 var a1, a2, a3, a, aTerm;
 var b1, b2, I;
 var c1, c2, R;
+var q = BigNumber.ONE;
 var graph_t;
-var q;
 var dimension;
 var equationLevel = 0;
 var max_R, max_I;
@@ -40,7 +40,6 @@ var init = () => {
     maxCurrency = BigNumber.ZERO;
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
-    q = BigNumber.ONE;
 
     // Regular Upgrades
 
@@ -198,7 +197,7 @@ var tick = (elapsedTime, multiplier) => {
     let bonus = theory.publicationMultiplier;
     let value_q1 = getQ1(q1.level);
     let value_q2 = getQ2(q2.level);
-    q += value_q1 * value_q2 ** 20 * dt;
+    q = q + value_q1 * value_q2.pow(BigNumber.TEN) * dt * bonus;
 
     t += dt;
 
@@ -324,8 +323,8 @@ var getSecondaryEquation = () => {
 var getTertiaryEquation = () => {
     let result = "";//"\\text{q: " + q + " | max: " + maxCurrency + " | t: " + t + "}";
 
-    result += "\\begin{matrix}maxR max I=";
-    result += max_R.toString() + " /" + max_I.toString();
+    result += "\\begin{matrix}q=";
+    result += q.toString();
     result += ",\\;R =";
     result += BigNumber.from(R).toString(2);
     result += ",\\;I =";

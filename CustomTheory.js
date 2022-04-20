@@ -275,6 +275,7 @@ var tick = (elapsedTime, multiplier) => {
     let vc2 = getC2(c2.level);
     let c = BigNumber.from(vc1 * vc2);
 
+    // these R and I values are used for coordinates on the graph
     R = BigNumber.from(b * t.cos()); // b * cos(t) - real part of solution
     I = BigNumber.from(c * t.sin()); // c * i * sin(t) - "imaginary" part of solution
     max_R = max_R.max(R);
@@ -282,15 +283,15 @@ var tick = (elapsedTime, multiplier) => {
 
     let base_currency_multiplier = dt * bonus;
 
-    // stops R2 and I3 from growing when not unlocked
+    // R2 and I3 calculation (currency)
     if(dimension.level > 0) {
-        currency_R.value += base_currency_multiplier * (R.abs()).pow(BigNumber.TWO);
+        currency_R.value += base_currency_multiplier * (R.abs()).pow(BigNumber.TWO); // abs so currency cannot go negative
     } else {
         currency_R.value = 0;
     }
 
     if(dimension.level > 1) {
-        currency_I.value += base_currency_multiplier * (I.abs()).pow(BigNumber.TWO);
+        currency_I.value += base_currency_multiplier * (I.abs()).pow(BigNumber.TWO); // -,,-
     } else {
         currency_I.value = 0;
     }

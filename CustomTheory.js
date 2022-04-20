@@ -27,7 +27,7 @@ var q = BigNumber.ONE;
 var t_multiplier_upgrade;    // t_multiplier = multiplies dt by given value (1 + t_multiplier * dt)
 
 // milestone variables
-var aExp, aBase, aTerm;
+var a_exp, a_base, a_term;
 var dimension;
 
 // graph variables
@@ -37,7 +37,7 @@ var I = BigNumber.ZERO;
 var graph_t;        // graph_t = distance from origin to current x value
 var t;              // t = time elapsed ( -> cos(t), sin(t) etc.)
 var max_R, max_I;
-var maxCurrency;
+var max_currency;
 
 // vector variables
 var state = new Vector3(0, 0, 0);
@@ -52,7 +52,7 @@ var init = () => {
 
     graph_t = BigNumber.ZERO;
     t = BigNumber.ZERO;
-    maxCurrency = BigNumber.ZERO;
+    max_currency = BigNumber.ZERO;
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
 
@@ -168,24 +168,24 @@ var init = () => {
     }
 
     {
-        aTerm = theory.createMilestoneUpgrade(1, 1);
-        aTerm.getDescription = (_) => Localization.getUpgradeAddTermDesc("2^{a_1}");
-        aTerm.getInfo = (_) => Localization.getUpgradeAddTermInfo("2^{a_1}");
-        aTerm.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
+        a_term = theory.createMilestoneUpgrade(1, 1);
+        a_term.getDescription = (_) => Localization.getUpgradeAddTermDesc("2^{a_1}");
+        a_term.getInfo = (_) => Localization.getUpgradeAddTermInfo("2^{a_1}");
+        a_term.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
     {
-        aBase = theory.createMilestoneUpgrade(2, 4);
-        aBase.getDescription = (_) => "$\\uparrow$ $a$ base by 1";
-        aBase.getInfo = (_) => "Increases $a$ base by 1";
-        aBase.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
+        a_base = theory.createMilestoneUpgrade(2, 4);
+        a_base.getDescription = (_) => "$\\uparrow$ $a$ base by 1";
+        a_base.getInfo = (_) => "Increases $a$ base by 1";
+        a_base.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
     {
-        aExp = theory.createMilestoneUpgrade(3, 2);
-        aExp.getDescription = (_) => Localization.getUpgradeIncCustomExpDesc(aExp.level == 0 ? getABase(aBase.level).toString(0) + "^{a_1}" : getABase(aBase.level).toString(0) + "^{a_1a_2}", aExp.level == 0 ? "a_2" : "a_3");
-        aExp.getInfo = (_) => Localization.getUpgradeIncCustomExpInfo(aExp.level == 0 ? getABase(aBase.level).toString(0) + "^{a_1}" : getABase(aBase.level).toString(0) + "^{a_1a_2}", aExp.level == 0 ? "a_2" : "a_3");
-        aExp.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
+        a_exp = theory.createMilestoneUpgrade(3, 2);
+        a_exp.getDescription = (_) => Localization.getUpgradeIncCustomExpDesc(a_exp.level == 0 ? getABase(a_base.level).toString(0) + "^{a_1}" : getABase(a_base.level).toString(0) + "^{a_1a_2}", a_exp.level == 0 ? "a_2" : "a_3");
+        a_exp.getInfo = (_) => Localization.getUpgradeIncCustomExpInfo(a_exp.level == 0 ? getABase(a_base.level).toString(0) + "^{a_1}" : getABase(a_base.level).toString(0) + "^{a_1a_2}", a_exp.level == 0 ? "a_2" : "a_3");
+        a_exp.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
     /*
@@ -207,13 +207,13 @@ var init = () => {
 
 var updateAvailability = () => {
 
-    aTerm.isAvailable = dimension.level > 1;
-    aBase.isAvailable = aTerm.level > 0;
-    aExp.isAvailable = aTerm.level > 0;
+    a_term.isAvailable = dimension.level > 1;
+    a_base.isAvailable = a_term.level > 0;
+    a_exp.isAvailable = a_term.level > 0;
 
-    a1.isAvailable = aTerm.level > 0;
-    a2.isAvailable = aExp.level > 0;
-    a3.isAvailable = aExp.level > 1;
+    a1.isAvailable = a_term.level > 0;
+    a2.isAvailable = a_exp.level > 0;
+    a3.isAvailable = a_exp.level > 1;
 
     b1.isAvailable = dimension.level > 0;
     b2.isAvailable = dimension.level > 0;
@@ -226,7 +226,7 @@ var updateAvailability = () => {
 
 var postPublish = () => {
     scale = 0.2;
-    maxCurrency = BigNumber.ZERO;
+    max_currency = BigNumber.ZERO;
     graph_t = BigNumber.ZERO;
     q = BigNumber.ONE;
 }
@@ -251,19 +251,19 @@ var tick = (elapsedTime, multiplier) => {
     let va1 = getA1(a1.level);
     let va2 = getA2(a2.level);
     let va3 = getA3(a3.level);
-    let vaBase = getABase(aBase.level);
-    let vaExp = BigNumber.ONE;
-    switch (aExp.level) {
+    let va_base = getABase(a_base.level);
+    let va_exp = BigNumber.ONE;
+    switch (a_exp.level) {
         case 0:
-            vaExp = va1;
+            va_exp = va1;
             break;
         case 1:
-            vaExp = va1 * va2;
+            va_exp = va1 * va2;
             break;
         case 2:
-            vaExp = va1 * va2 * va3;
+            va_exp = va1 * va2 * va3;
     }
-    let a = aTerm.level == 0 ? BigNumber.ONE : vaBase.pow(vaExp);
+    let a = a_term.level == 0 ? BigNumber.ONE : va_base.pow(va_exp);
 
     // b calc
     let vb1 = getB1(b1.level);
@@ -280,17 +280,17 @@ var tick = (elapsedTime, multiplier) => {
     max_R = max_R.max(R);
     max_I = max_I.max(I);
 
-    let baseCurrencyMultiplier = dt * bonus;
+    let base_currency_multiplier = dt * bonus;
 
     // stops R2 and I3 from growing when not unlocked
     if(dimension.level > 0) {
-        currency_R.value += baseCurrencyMultiplier * (R.abs()).pow(BigNumber.TWO);
+        currency_R.value += base_currency_multiplier * (R.abs()).pow(BigNumber.TWO);
     } else {
         currency_R.value = 0;
     }
 
     if(dimension.level > 1) {
-        currency_I.value += baseCurrencyMultiplier * (I.abs()).pow(BigNumber.TWO);
+        currency_I.value += base_currency_multiplier * (I.abs()).pow(BigNumber.TWO);
     } else {
         currency_I.value = 0;
     }
@@ -304,16 +304,16 @@ var tick = (elapsedTime, multiplier) => {
 
         switch (dimension.level) {
             case 0:
-                currency.value += baseCurrencyMultiplier * a * (t * q);
+                currency.value += base_currency_multiplier * a * (t * q);
                 break;
             case 1:
-                currency.value += baseCurrencyMultiplier * a * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO)).sqrt();
+                currency.value += base_currency_multiplier * a * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO)).sqrt();
                 break;
             case 2:
-                currency.value += baseCurrencyMultiplier * a * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO) + (currency_I.value).pow(BigNumber.TWO)).sqrt();
+                currency.value += base_currency_multiplier * a * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO) + (currency_I.value).pow(BigNumber.TWO)).sqrt();
                 break;
         }
-        maxCurrency = maxCurrency.max(currency.value);
+        max_currency = max_currency.max(currency.value);
     }
 
     // graph drawn
@@ -349,42 +349,43 @@ var getPrimaryEquation = () => {
     let result = "\\begin{array}{c}\\dot{\\rho} = ";
 
     // let t draw on equation
-    let tStr = "";
-    let tLevel = getT(t_multiplier_upgrade.level).toString(0);
-    if(tLevel != 1) {
-        tStr = tLevel;
+    let t_str = "";
+    let t_level = getT(t_multiplier_upgrade.level).toString(0);
+    if(t_level != 1) {
+        t_str = t_level;
     }
 
     // let a draw on equation
-    let aEquationExponent = "";
-    let aEquationTerm = "";
-    switch(aExp.level) {
+    let a_eq_exp = "";
+    let a_eq_term = "";
+    switch(a_exp.level) {
         case 0:
-            aEquationExponent = "a_1";
+            a_eq_exp = "a_1";
             break;
         case 1:
-            aEquationExponent = "a_1a_2";
+            a_eq_exp = "a_1a_2";
             break;
         case 2:
-            aEquationExponent = "a_1a_2a_3";
+            a_eq_exp = "a_1a_2a_3";
             break;
     }
-    if(aTerm.level > 0) {
-        aEquationTerm += getABase(aBase.level).toString(0) + "^{" + aEquationExponent + "}"
+    if(a_term.level > 0) {
+        a_eq_term += getABase(a_base.level).toString(0) + "^{" + a_eq_exp + "}"
     }
-    result += aEquationTerm;
+
+    result += a_eq_term;
 
     switch(dimension.level) {
         case 0:
-            result += tStr + "tq\\\\";
+            result += t_str + "tq\\\\";
             result += "G(t) = \\cos(t) + i\\sin(t)";
             break;
         case 1:
-            result += "\\sqrt{" + tStr + "tq^2 + R_2^{\\;2}\\text{ }}\\\\";
+            result += "\\sqrt{" + t_str + "tq^2 + R_2^{\\;2}\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + i\\sin(t)";
             break;
         case 2:
-            result += "\\sqrt{\\text{\\,}" + tStr + "tq^2 + R_2^{\\;2}\\; + \\; I_3^{\\;2}\\text{ }}\\\\";
+            result += "\\sqrt{\\text{\\,}" + t_str + "tq^2 + R_2^{\\;2}\\; + \\; I_3^{\\;2}\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + ci\\sin(t)";
             break;
     }
@@ -396,6 +397,7 @@ var getPrimaryEquation = () => {
 var getSecondaryEquation = () => {
     theory.secondaryEquationHeight = 70;
     let result = "\\begin{array}{c}";
+
     switch(dimension.level) {
         case 0:
             result += "\\dot{q} = q_1q_2\\quad\\\\";
@@ -407,8 +409,10 @@ var getSecondaryEquation = () => {
             result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(t),\\quad\\dot{I} = -(ic_1c_2\\sin(t))^2\\\\";
             break;
     }
+
     result += theory.latexSymbol + "=\\max\\rho^{0.1}";
     result += "\\end{array}"
+
     return result;
 }
 

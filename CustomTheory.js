@@ -237,9 +237,9 @@ var tick = (elapsedTime, multiplier) => {
     let bonus = theory.publicationMultiplier;
 
     // q calc
-    let value_q1 = getQ1(q1.level);
-    let value_q2 = getQ2(q2.level);
-    q += value_q1 * value_q2 * dt * bonus;
+    let vq1 = getQ1(q1.level);
+    let vq2 = getQ2(q2.level);
+    q += vq1 * vq2 * dt * bonus;
 
     // t calc
     let t_multiplier_level = getT(t_multiplier_upgrade.level);
@@ -248,42 +248,38 @@ var tick = (elapsedTime, multiplier) => {
     }
 
     // a calc
-    let value_a1 = getA1(a1.level);
-    let value_a2 = getA2(a2.level);
-    let value_a3 = getA3(a3.level);
-    let value_aBase = getABase(aBase.level);
-    let value_aExp = BigNumber.ONE;
+    let va1 = getA1(a1.level);
+    let va2 = getA2(a2.level);
+    let va3 = getA3(a3.level);
+    let vaBase = getABase(aBase.level);
+    let vaExp = BigNumber.ONE;
     switch (aExp.level) {
         case 0:
-            value_aExp = value_a1;
+            vaExp = va1;
             break;
         case 1:
-            value_aExp = value_a1 * value_a2;
+            vaExp = va1 * va2;
             break;
         case 2:
-            value_aExp = value_a1 * value_a2 * value_a3;
+            vaExp = va1 * va2 * va3;
     }
-    let a = value_aBase.pow(value_aExp);
+    let a = aTerm.level == 0 ? BigNumber.ONE : vaBase.pow(vaExp);
 
     // b calc
-    let value_b1 = getB1(b1.level);
-    let value_b2 = getB2(b2.level);
-    let b = BigNumber.from(value_b1 * value_b2);
+    let vb1 = getB1(b1.level);
+    let vb2 = getB2(b2.level);
+    let b = BigNumber.from(vb1 * vb2);
 
     // c calc
-    let value_c1 = getC1(c1.level);
-    let value_c2 = getC2(c2.level);
-    let c = BigNumber.from(value_c1 * value_c2);
+    let vc1 = getC1(c1.level);
+    let vc2 = getC2(c2.level);
+    let c = BigNumber.from(vc1 * vc2);
 
     R = BigNumber.from(b * t.cos()); // b * cos(t) - real part of solution
     I = BigNumber.from(c * t.sin()); // c * i * sin(t) - "imaginary" part of solution
-
-    // calculates max value R and I reach for checkForScale();
     max_R = max_R.max(R);
     max_I = max_I.max(I);
 
-    // variable used for calculating a, check if a has been unlocked yet
-    let a_currency_calc = aTerm.level == 0 ? BigNumber.ONE : a
     let baseCurrencyMultiplier = dt * bonus;
 
     // stops R2 and I3 from growing when not unlocked
@@ -299,24 +295,22 @@ var tick = (elapsedTime, multiplier) => {
         currency_I.value = 0;
     }
 
-
     // this check exists to stop rho from growing when every variable is 0
-    // value_q1 = 0 basically means at start of every pub
-    if(value_q1 == BigNumber.ZERO) {
+    // vq1 = 0 basically means at start of every pub
+    if(vq1 == BigNumber.ZERO) {
         currency.value = 0;
     } else {
-        graph_t += dt / 2; // graph_t = x axis of coordinate, diving by 2 so it doesnt go too far from origin
+        graph_t += dt / 2; // diving by 2 so it doesnt go too far from origin
 
-        // different currency calculation based on level
         switch (dimension.level) {
             case 0:
-                currency.value += baseCurrencyMultiplier * a_currency_calc * (t * q);
+                currency.value += baseCurrencyMultiplier * a * (t * q);
                 break;
             case 1:
-                currency.value += baseCurrencyMultiplier * a_currency_calc * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO)).sqrt();
+                currency.value += baseCurrencyMultiplier * a * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO)).sqrt();
                 break;
             case 2:
-                currency.value += baseCurrencyMultiplier * a_currency_calc * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO) + (currency_I.value).pow(BigNumber.TWO)).sqrt();
+                currency.value += baseCurrencyMultiplier * a * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO) + (currency_I.value).pow(BigNumber.TWO)).sqrt();
                 break;
         }
         maxCurrency = maxCurrency.max(currency.value);

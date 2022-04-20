@@ -202,9 +202,10 @@ var updateAvailability = () => {
     aTerm.isAvailable = dimension.level > 1;
     aBase.isAvailable = aTerm.level > 0;
     aExp.isAvailable = aTerm.level > 0;
+
     a1.isAvailable = aTerm.level > 0;
-    a2.isAvailable = aTerm.level > 1;
-    a3.isAvailable = aTerm.level > 2;
+    a2.isAvailable = aExp.level > 0;
+    a3.isAvailable = aExp.level > 1;
 
     b1.isAvailable = dimension.level > 0;
     b2.isAvailable = dimension.level > 0;
@@ -246,7 +247,19 @@ var tick = (elapsedTime, multiplier) => {
     let value_a1 = getA1(a1.level);
     let value_a2 = getA2(a2.level);
     let value_a3 = getA3(a3.level);
-    a = BigNumber.from(value_a1 * value_a2 * value_a3) / BigNumber.HUNDRED;
+    let value_aBase = getABase(aBase.level);
+    let value_aExp = BigNumber.ONE;
+    switch (aExp.level) {
+        case 0:
+            value_aExp = value_a1;
+            break;
+        case 1:
+            value_aExp = value_a1 * value_a2;
+            break;
+        case 2:
+            value_aExp = value_a1 * value_a2 * value_a3;
+    }
+    a = value_aBase.pow(value_aExp);
 
     value_graph = value_t;
 
@@ -255,22 +268,24 @@ var tick = (elapsedTime, multiplier) => {
     max_R = max_R.max(R);
     max_I = max_I.max(I);
 
-    let baseCurrencyMultiplier = dt * bonus * (aTerm.level !== 0 ? a : BigNumber.ONE);
-    currency_R.value += BigNumber.from((baseCurrencyMultiplier * R.abs()) ** 2);
-    currency_I.value += BigNumber.from((baseCurrencyMultiplier * I.abs()) ** 2);
+    let a_currency_calc = aTerm.level == 0 ? BigNumber.ONE : a
+    let baseCurrencyMultiplier = dt * bonus;
+
+    currency_R.value += (baseCurrencyMultiplier * R.abs()).pow(BigNumber.TWO);
+    currency_I.value += (baseCurrencyMultiplier * I.abs()).pow(BigNumber.TWO);
     if(value_q1 == BigNumber.ZERO) {
         currency.value = 0;
     } else {
         graph_t += dt / 2;
         switch (equationLevel) {
             case 0:
-                currency.value += baseCurrencyMultiplier * value_t * q;
+                currency.value += baseCurrencyMultiplier * a_currency_calc * (value_t * q);
                 break;
             case 1:
-                currency.value += baseCurrencyMultiplier * (value_t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO)).sqrt();
+                currency.value += baseCurrencyMultiplier * a_currency_calc * (value_t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO)).sqrt();
                 break;
             case 2:
-                currency.value += baseCurrencyMultiplier * (value_t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO) + (currency_I.value).pow(BigNumber.TWO)).sqrt();
+                currency.value += baseCurrencyMultiplier * a_currency_calc * (value_t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO) + (currency_I.value).pow(BigNumber.TWO)).sqrt();
                 break;
         }
         maxCurrency = maxCurrency.max(currency.value);
@@ -371,7 +386,7 @@ var getSecondaryEquation = () => {
 }
 
 var getTertiaryEquation = () => {
-    let result = "";//"\\text{q: " + q + " | max: " + maxCurrency + " | t: " + t + "}";
+    let result = "\\text{a = " + a.toString() + "}";//"\\text{q: " + q + " | max: " + maxCurrency + " | t: " + t + "}";
 
     result += "\\begin{matrix}q=";
     result += q.toString();

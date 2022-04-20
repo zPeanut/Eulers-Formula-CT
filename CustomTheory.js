@@ -304,10 +304,10 @@ var tick = (elapsedTime, multiplier) => {
 
         switch (dimension.level) {
             case 0:
-                currency.value += base_currency_multiplier * a * (t * q.pow(BigNumber.TWO)).sqrt();
+                currency.value += base_currency_multiplier * (t * q.pow(BigNumber.TWO)).sqrt();
                 break;
             case 1:
-                currency.value += base_currency_multiplier * a * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO)).sqrt();
+                currency.value += base_currency_multiplier * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO)).sqrt();
                 break;
             case 2:
                 currency.value += base_currency_multiplier * a * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO) + (currency_I.value).pow(BigNumber.TWO)).sqrt();

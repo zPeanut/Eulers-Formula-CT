@@ -386,7 +386,7 @@ var getSecondaryEquation = () => {
 }
 
 var getTertiaryEquation = () => {
-    let result = "\\text{a = " + a.toString() + "}";//"\\text{q: " + q + " | max: " + maxCurrency + " | t: " + t + "}";
+    let result = "";//"\\text{q: " + q + " | max: " + maxCurrency + " | t: " + t + "}";
 
     result += "\\begin{matrix}q=";
     result += q.toString();

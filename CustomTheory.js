@@ -286,7 +286,7 @@ var tick = (elapsedTime, multiplier) => {
     // R2 and I3 calculation (currency)
     if(dimension.level > 0) {
         currency_R.value += base_currency_multiplier * (R.abs()).pow(BigNumber.TWO); // abs so currency cannot go negative
-    } else {
+    } else {                                                                         // squared on request of snaeky
         currency_R.value = 0;
     }
 

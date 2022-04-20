@@ -304,7 +304,7 @@ var tick = (elapsedTime, multiplier) => {
 
         switch (dimension.level) {
             case 0:
-                currency.value += base_currency_multiplier * a * (t * q);
+                currency.value += base_currency_multiplier * a * (t * q.pow(BigNumber.TWO)).sqrt();
                 break;
             case 1:
                 currency.value += base_currency_multiplier * a * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO)).sqrt();
@@ -377,7 +377,7 @@ var getPrimaryEquation = () => {
 
     switch(dimension.level) {
         case 0:
-            result += t_str + "tq\\\\";
+            result += "\\sqrt{" + t_str + "tq^2}\\\\";
             result += "G(t) = \\cos(t) + i\\sin(t)";
             break;
         case 1:
@@ -447,7 +447,7 @@ var getTertiaryEquation = () => {
         quaternaryEntries.push(new QuaternaryEntry("t", null));
         quaternaryEntries.push(new QuaternaryEntry("g_t", null));
         quaternaryEntries.push(new QuaternaryEntry("m_t", null));
-         quaternaryEntries.push(new QuaternaryEntry("a", null));
+        quaternaryEntries.push(new QuaternaryEntry("a", null));
     }
 
     quaternaryEntries[0].value = scale;

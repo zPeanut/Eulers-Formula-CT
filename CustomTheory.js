@@ -5,7 +5,7 @@ import {QuaternaryEntry, theory} from "./api/Theory";
 import {log, Utils} from "./api/Utils";
 import {GraphQuality} from "./api/Settings";
 
-var id = "my_custom_theory_id";
+var id = "eulers_formula";
 var name = "Euler's Formula";
 var description = "A theory about Euler's formula.";
 var authors = "peanut & Snaeky";

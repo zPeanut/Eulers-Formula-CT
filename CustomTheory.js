@@ -1,6 +1,6 @@
 ﻿import { ExponentialCost, FreeCost, LinearCost } from "./api/Costs";
 import { Localization } from "./api/Localization";
-import { BigNumber } from "./api/BigNumber";
+import {BigNumber, parseBigNumber} from "./api/BigNumber";
 import {QuaternaryEntry, theory} from "./api/Theory";
 import {log, Utils} from "./api/Utils";
 import {GraphQuality} from "./api/Settings";
@@ -34,7 +34,7 @@ var scale;
 var R = BigNumber.ZERO;
 var I = BigNumber.ZERO;
 var graph_t;        // graph_t = distance from origin to current x value
-var t = BigNumber.ZERO;              // t = time elapsed ( -> cos(t), sin(t) etc.)
+var t = BigNumber.ZERO;  // t = time elapsed ( -> cos(t), sin(t) etc.)
 var max_R, max_I;
 var max_currency;
 
@@ -203,6 +203,8 @@ var init = () => {
     updateAvailability();
 }
 
+// INTERNAL FUNCTIONS
+// -------------------------------------------------------------------------------
 var updateAvailability = () => {
 
     a_term.isAvailable = dimension.level > 1;
@@ -228,6 +230,23 @@ var postPublish = () => {
     graph_t = BigNumber.ZERO;
     t = BigNumber.ZERO;
     q = BigNumber.ONE;
+}
+
+var getInternalState = () => `${q} ${t}`
+
+var setInternalState = (state) => {
+    let values = state.split(" ");
+    if (values.length > 0) q = parseBigNumber(values[0]);
+    if (values.length > 1) t = parseBigNumber(values[1]);
+}
+
+var checkForScale = () => {
+    if(max_R > 1.3 / scale || max_I > 1.3 / scale) { // scale down everytime R or I gets larger than the screen
+        graph_t = 0;
+        theory.clearGraph();
+        let old_scale = scale; // save previous scale
+        scale = (50 / 100) * old_scale // scale down by 50%
+    }
 }
 
 var tick = (elapsedTime, multiplier) => {
@@ -332,15 +351,8 @@ var tick = (elapsedTime, multiplier) => {
     // constantly check for scale
     checkForScale();
 }
+// -------------------------------------------------------------------------------
 
-var checkForScale = () => {
-    if(max_R > 1.3 / scale || max_I > 1.3 / scale) { // scale down everytime R or I gets larger than the screen
-        graph_t = 0;
-        theory.clearGraph();
-        let old_scale = scale; // save previous scale
-        scale = (50 / 100) * old_scale // scale down by 50%
-    }
-}
 
 // EQUATIONS
 // -------------------------------------------------------------------------------

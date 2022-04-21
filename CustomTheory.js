@@ -167,15 +167,15 @@ var init = () => {
 
     {
         a_term = theory.createMilestoneUpgrade(1, 1);
-        a_term.getDescription = (_) => Localization.getUpgradeAddTermDesc("2^{a_1}");
-        a_term.getInfo = (_) => Localization.getUpgradeAddTermInfo("2^{a_1}");
+        a_term.getDescription = (_) => Localization.getUpgradeAddTermDesc("a_1");
+        a_term.getInfo = (_) => Localization.getUpgradeAddTermInfo("a_1");
         a_term.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
     {
         a_exp = theory.createMilestoneUpgrade(2, 4);
-        a_exp.description = Localization.getUpgradeIncCustomExpDesc("a", "0.25");
-        a_exp.info = Localization.getUpgradeIncCustomExpInfo("q_1", "0.25");
+        a_exp.getDescription = (_) => Localization.getUpgradeIncCustomExpDesc("a", "0.25");
+        a_exp.getInfo = (_) => Localization.getUpgradeIncCustomExpInfo("a", "0.25");
         a_exp.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
@@ -358,6 +358,23 @@ var getPrimaryEquation = () => {
     // let a draw on equation
     let a_eq_base = "";
     let a_eq_term = "";
+    let a_eq_exp = "";
+    switch(a_exp.level) {
+        case 0:
+        case 4:
+            // 1 and 2
+            a_eq_exp = getAExp(a_exp.level).toString(0);
+            break;
+        case 1:
+        case 3:
+            // 1.25 and 1.75
+            a_eq_exp = getAExp(a_exp.level).toString(2);
+            break;
+        case 2:
+            // 1.5
+            a_eq_exp = getAExp(a_exp.level).toString(1);
+            break;
+    }
     switch(a_base.level) {
         case 0:
             a_eq_base = "a_1";
@@ -369,11 +386,18 @@ var getPrimaryEquation = () => {
             a_eq_base = "a_1a_2a_3";
             break;
     }
+
+    // if a has been unlocked, show a term
     if(a_term.level > 0) {
-        a_eq_term += a_eq_base;
+        a_eq_term = a_eq_base;
     }
+    // if a has an exponent, show exponent only when bigger than lvl 0
     if(a_exp.level > 0) {
-        a_eq_term = "(" + a_eq_base + ")^{" + (a_exp.level == 4 ? getAExp(a_exp.level).toString(0) : getAExp(a_exp.level).toString(2)) + "}";
+        a_eq_term = a_eq_base + "^{\\;" + a_eq_exp + "}\\,";
+    }
+    // show brackets when exponent is shown and a term is bigger than lvl 0
+    if(a_exp.level > 0 && a_base.level > 0) {
+        a_eq_term = "(" + a_eq_base + ")" + "^{" + a_eq_exp + "}";
     }
 
     result += a_eq_term;

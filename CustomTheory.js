@@ -20,14 +20,13 @@ var q1, q2;
 var a1, a2, a3;
 var b1, b2;
 var c1, c2;
-
 var q = BigNumber.ONE;
 
 // permanent upgrade variables
 var t_multiplier_upgrade;    // t_multiplier = multiplies dt by given value (1 + t_multiplier * dt)
 
 // milestone variables
-var a_exp, a_base, a_term;
+var a_base, a_exp, a_term;
 var dimension;
 
 // graph variables
@@ -35,7 +34,7 @@ var scale;
 var R = BigNumber.ZERO;
 var I = BigNumber.ZERO;
 var graph_t;        // graph_t = distance from origin to current x value
-var t;              // t = time elapsed ( -> cos(t), sin(t) etc.)
+var t = BigNumber.ZERO;              // t = time elapsed ( -> cos(t), sin(t) etc.)
 var max_R, max_I;
 var max_currency;
 
@@ -51,7 +50,6 @@ var init = () => {
     currency_I = theory.createCurrency("I", "I");
 
     graph_t = BigNumber.ZERO;
-    t = BigNumber.ZERO;
     max_currency = BigNumber.ZERO;
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
@@ -175,17 +173,17 @@ var init = () => {
     }
 
     {
-        a_base = theory.createMilestoneUpgrade(2, 4);
-        a_base.getDescription = (_) => "$\\uparrow$ $a$ base by 1";
-        a_base.getInfo = (_) => "Increases $a$ base by 1";
-        a_base.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
+        a_exp = theory.createMilestoneUpgrade(2, 4);
+        a_exp.description = Localization.getUpgradeIncCustomExpDesc("a", "0.25");
+        a_exp.info = Localization.getUpgradeIncCustomExpInfo("q_1", "0.25");
+        a_exp.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
     {
-        a_exp = theory.createMilestoneUpgrade(3, 2);
-        a_exp.getDescription = (_) => Localization.getUpgradeIncCustomExpDesc(a_exp.level == 0 ? getABase(a_base.level).toString(0) + "^{a_1}" : getABase(a_base.level).toString(0) + "^{a_1a_2}", a_exp.level == 0 ? "a_2" : "a_3");
-        a_exp.getInfo = (_) => Localization.getUpgradeIncCustomExpInfo(a_exp.level == 0 ? getABase(a_base.level).toString(0) + "^{a_1}" : getABase(a_base.level).toString(0) + "^{a_1a_2}", a_exp.level == 0 ? "a_2" : "a_3");
-        a_exp.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
+        a_base = theory.createMilestoneUpgrade(3, 2);
+        a_base.getDescription = (_) => Localization.getUpgradeAddTermDesc(a_base.level == 0 ? "a_2" : "a_3");
+        a_base.getInfo = (_) => Localization.getUpgradeAddTermInfo(a_base.level == 0 ? "a_2" : "a_3");
+        a_base.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
     /*
@@ -208,12 +206,12 @@ var init = () => {
 var updateAvailability = () => {
 
     a_term.isAvailable = dimension.level > 1;
-    a_base.isAvailable = a_term.level > 0;
     a_exp.isAvailable = a_term.level > 0;
+    a_base.isAvailable = a_term.level > 0;
 
     a1.isAvailable = a_term.level > 0;
-    a2.isAvailable = a_exp.level > 0;
-    a3.isAvailable = a_exp.level > 1;
+    a2.isAvailable = a_base.level > 0;
+    a3.isAvailable = a_base.level > 1;
 
     b1.isAvailable = dimension.level > 0;
     b2.isAvailable = dimension.level > 0;
@@ -228,6 +226,7 @@ var postPublish = () => {
     scale = 0.2;
     max_currency = BigNumber.ZERO;
     graph_t = BigNumber.ZERO;
+    t = BigNumber.ZERO;
     q = BigNumber.ONE;
 }
 
@@ -251,17 +250,17 @@ var tick = (elapsedTime, multiplier) => {
     let va1 = getA1(a1.level);
     let va2 = getA2(a2.level);
     let va3 = getA3(a3.level);
-    let va_base = getABase(a_base.level);
-    let va_exp = BigNumber.ONE;
-    switch (a_exp.level) {
+    let va_exp = getAExp(a_exp.level);
+    let va_base = BigNumber.ONE;
+    switch (a_base.level) {
         case 0:
-            va_exp = va1;
+            va_base = va1;
             break;
         case 1:
-            va_exp = va1 * va2;
+            va_base = va1 * va2;
             break;
         case 2:
-            va_exp = va1 * va2 * va3;
+            va_base = va1 * va2 * va3;
     }
     let a = a_term.level == 0 ? BigNumber.ONE : va_base.pow(va_exp);
 
@@ -335,7 +334,7 @@ var tick = (elapsedTime, multiplier) => {
 }
 
 var checkForScale = () => {
-    if(max_R > (8 / scale) / 4 || max_I > (8 / scale) / 4) { // scale down everytime R or I gets larger than the screen
+    if(max_R > 1.3 / scale || max_I > 1.3 / scale) { // scale down everytime R or I gets larger than the screen
         graph_t = 0;
         theory.clearGraph();
         let old_scale = scale; // save previous scale
@@ -346,7 +345,7 @@ var checkForScale = () => {
 // EQUATIONS
 // -------------------------------------------------------------------------------
 var getPrimaryEquation = () => {
-    theory.primaryEquationHeight = 90;
+    theory.primaryEquationHeight = 70;
     let result = "\\begin{array}{c}\\dot{\\rho} = ";
 
     // let t draw on equation
@@ -357,21 +356,24 @@ var getPrimaryEquation = () => {
     }
 
     // let a draw on equation
-    let a_eq_exp = "";
+    let a_eq_base = "";
     let a_eq_term = "";
-    switch(a_exp.level) {
+    switch(a_base.level) {
         case 0:
-            a_eq_exp = "a_1";
+            a_eq_base = "a_1";
             break;
         case 1:
-            a_eq_exp = "a_1a_2";
+            a_eq_base = "a_1a_2";
             break;
         case 2:
-            a_eq_exp = "a_1a_2a_3";
+            a_eq_base = "a_1a_2a_3";
             break;
     }
     if(a_term.level > 0) {
-        a_eq_term += getABase(a_base.level).toString(0) + "^{" + a_eq_exp + "}"
+        a_eq_term += a_eq_base;
+    }
+    if(a_exp.level > 0) {
+        a_eq_term = "(" + a_eq_base + ")^{" + (a_exp.level == 4 ? getAExp(a_exp.level).toString(0) : getAExp(a_exp.level).toString(2)) + "}";
     }
 
     result += a_eq_term;
@@ -396,7 +398,7 @@ var getPrimaryEquation = () => {
 }
 
 var getSecondaryEquation = () => {
-    theory.secondaryEquationHeight = 70;
+    theory.secondaryEquationHeight = 50;
     let result = "\\begin{array}{c}";
 
     switch(dimension.level) {
@@ -469,8 +471,8 @@ var getTertiaryEquation = () => {
 // -------------------------------------------------------------------------------
 
 var get3DGraphPoint = () => swizzles[0]((state - center) * scale);
-var getPublicationMultiplier = (tau) => tau.pow(0.164) / BigNumber.SIX;
-var getPublicationMultiplierFormula = (symbol) => "\\frac{{" + symbol + "}^{0.164}}{6}";
+var getPublicationMultiplier = (tau) => tau.pow(1.5);
+var getPublicationMultiplierFormula = (symbol) => symbol + "^{1.5}";
 var isCurrencyVisible = (index) => index == 0 || (index == 1 && dimension.level > 0) || (index == 2 && dimension.level > 1);
 var getTau = () => currency.value.pow(BigNumber.from(0.1));
 
@@ -479,7 +481,7 @@ var getQ2 = (level) => BigNumber.TWO.pow(level);
 var getA1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 var getA2 = (level) => BigNumber.TWO.pow(level);
 var getA3 = (level) => BigNumber.TWO.pow(level);
-var getABase = (level) => BigNumber.from(2 + 1 * level);
+var getAExp = (level) => BigNumber.from(1 + 0.25 * level);
 var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 var getB2 = (level) => BigNumber.from(1.05).pow(level);
 var getC1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);

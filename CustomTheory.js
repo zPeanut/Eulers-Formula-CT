@@ -62,7 +62,7 @@ var init = () => {
     {
         let getDesc = (level) => "q_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "q_1=" + getQ1(level).toString(0);
-        q1 = theory.createUpgrade(0, currency, new FirstFreeCost(new ExponentialCost(15, 3.36)));
+        q1 = theory.createUpgrade(0, currency, new FirstFreeCost(new ExponentialCost(10, Math.log2(1.61328))));
         q1.getDescription = (_) => Utils.getMath(getDesc(q1.level));
         q1.getInfo = (amount) => Utils.getMathTo(getDesc(q1.level), getDesc(q1.level + amount));
     }
@@ -71,7 +71,7 @@ var init = () => {
     {
         let getDesc = (level) => "q_2=2^{" + level + "}";
         let getInfo = (level) => "q_2=" + getQ2(level).toString(0);
-        q2 = theory.createUpgrade(1, currency, new ExponentialCost(5, Math.log2(20)));
+        q2 = theory.createUpgrade(1, currency, new ExponentialCost(5, Math.log2(64)));
         q2.getDescription = (_) => Utils.getMath(getDesc(q2.level));
         q2.getInfo = (amount) => Utils.getMathTo(getInfo(q2.level), getInfo(q2.level + amount));
     }
@@ -117,7 +117,7 @@ var init = () => {
     {
         let getDesc = (level) => "a_1=" + getA1(level).toString(0);
         let getInfo = (level) => "a_1=" + getA1(level).toString(0);
-        a1 = theory.createUpgrade(6, currency, new FirstFreeCost(new ExponentialCost(2000, 50)));
+        a1 = theory.createUpgrade(6, currency, new FirstFreeCost(new ExponentialCost(2000, 2.2)));
         a1.getDescription = (_) => Utils.getMath(getDesc(a1.level));
         a1.getInfo = (amount) => Utils.getMathTo(getDesc(a1.level), getDesc(a1.level + amount));
     }
@@ -126,7 +126,7 @@ var init = () => {
     {
         let getDesc = (level) => "a_2=2^{" + level + "}";
         let getInfo = (level) => "a_2=" + getQ2(level).toString(0);
-        a2 = theory.createUpgrade(7, currency_R, new ExponentialCost(500, 15));
+        a2 = theory.createUpgrade(7, currency_R, new ExponentialCost(500, 2.2));
         a2.getDescription = (_) => Utils.getMath(getDesc(a2.level));
         a2.getInfo = (amount) => Utils.getMathTo(getInfo(a2.level), getInfo(a2.level + amount));
     }
@@ -135,7 +135,7 @@ var init = () => {
     {
         let getDesc = (level) => "a_3=2^{" + level + "}";
         let getInfo = (level) => "a_3=" + getQ2(level).toString(0);
-        a3 = theory.createUpgrade(8, currency_I, new ExponentialCost(500, 15));
+        a3 = theory.createUpgrade(8, currency_I, new ExponentialCost(500, 2.2));
         a3.getDescription = (_) => Utils.getMath(getDesc(a3.level));
         a3.getInfo = (amount) => Utils.getMathTo(getInfo(a3.level), getInfo(a3.level + amount));
     }

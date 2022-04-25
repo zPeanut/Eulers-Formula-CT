@@ -23,7 +23,7 @@ var c1, c2;
 var q = BigNumber.ONE;
 
 // permanent upgrade variables
-var t_multiplier_upgrade;    // t_multiplier = multiplies dt by given value (1 + t_multiplier * dt)
+var t_speed;    // t_multiplier = multiplies dt by given value (1 + t_multiplier * dt)
 
 // milestone variables
 var a_base, a_exp, a_term;
@@ -149,10 +149,10 @@ var init = () => {
     // t
     {
         let getInfo = (level) => "t=" + getT(level).toString(0);
-        t_multiplier_upgrade = theory.createPermanentUpgrade(3, currency, new ExponentialCost(1e20, Math.log2(1e20)));
-        t_multiplier_upgrade.getDescription = (_) => " $\\uparrow$ t multiplier by 1";
-        t_multiplier_upgrade.getInfo = (amount) => Utils.getMathTo(getInfo(t_multiplier_upgrade.level), getInfo(t_multiplier_upgrade.level + amount));
-        t_multiplier_upgrade.maxLevel = 4;
+        t_speed = theory.createPermanentUpgrade(3, currency, new ExponentialCost(1e20, Math.log2(1e20)));
+        t_speed.getDescription = (_) => " $\\uparrow$ Increase t growth";
+        t_speed.getInfo = (amount) => Utils.getMathTo(getInfo(t_speed.level), getInfo(t_speed.level + amount));
+        t_speed.maxLevel = 4;
     }
 
     //// Milestone Upgrades
@@ -260,7 +260,7 @@ var tick = (elapsedTime, multiplier) => {
     q += vq1 * vq2 * dt * bonus;
 
     // t calc
-    let t_multiplier_level = getT(t_multiplier_upgrade.level);
+    let t_multiplier_level = getT(t_speed.level);
     if(q1.level != 0) {
         t += ((1 + t_multiplier_level) * dt / 10) + (q.log().log()).abs() / 18;
     }
@@ -360,13 +360,6 @@ var getPrimaryEquation = () => {
     theory.primaryEquationHeight = 70;
     let result = "\\begin{array}{c}\\dot{\\rho} = ";
 
-    // let t draw on equation
-    let t_str = "";
-    let t_level = getT(t_multiplier_upgrade.level).toString(0);
-    if(t_level != 1) {
-        t_str = t_level;
-    }
-
     // let a draw on equation
     let a_eq_base = "";
     let a_eq_term = "";
@@ -416,15 +409,15 @@ var getPrimaryEquation = () => {
 
     switch(dimension.level) {
         case 0:
-            result += "\\sqrt{" + t_str + "tq^2}\\\\";
+            result += "\\sqrt{tq^2}\\\\";
             result += "G(t) = \\cos(t) + i\\sin(t)";
             break;
         case 1:
-            result += "\\sqrt{" + t_str + "tq^2 + R_2^{\\;2}\\text{ }}\\\\";
+            result += "\\sqrt{tq^2 + R_2^{\\;2}\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + i\\sin(t)";
             break;
         case 2:
-            result += "\\sqrt{\\text{\\,}" + t_str + "tq^2 + R_2^{\\;2}\\; + \\; I_3^{\\;2}\\text{ }}\\\\";
+            result += "\\sqrt{\\text{\\,}tq^2 + R_2^{\\;2}\\; + \\; I_3^{\\;2}\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + ci\\sin(t)";
             break;
     }

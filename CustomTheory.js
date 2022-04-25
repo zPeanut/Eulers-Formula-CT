@@ -87,7 +87,7 @@ var init = () => {
 
     // b2
     {
-        let getDesc = (level) => "b_2=1.05^{" + level + "}";
+        let getDesc = (level) => "b_2=1.1^{" + level + "}";
         let getInfo = (level) => "b_2=" + getB2(level).toString(2);
         b2 = theory.createUpgrade(3, currency_R, new ExponentialCost(100, Math.log2(2)));
         b2.getDescription = (_) => Utils.getMath(getDesc(b2.level));
@@ -106,7 +106,7 @@ var init = () => {
 
     // c2
     {
-        let getDesc = (level) => "c_2=1.05^{" + level + "}";
+        let getDesc = (level) => "c_2=1.1^{" + level + "}";
         let getInfo = (level) => "c_2=" + getC2(level).toString(2);
         c2 = theory.createUpgrade(5, currency_I, new ExponentialCost(100, Math.log2(2)));
         c2.getDescription = (_) => Utils.getMath(getDesc(c2.level));
@@ -156,7 +156,7 @@ var init = () => {
     theory.createAutoBuyerUpgrade(2, currency, 1e20);
 
     //// Milestone Upgrades
-    theory.setMilestoneCost(new LinearCost(1e10, 1e10)); // maybe 1e10?
+    theory.setMilestoneCost(new LinearCost(1, 1.5)); // maybe 1e10?
 
     {
         dimension = theory.createMilestoneUpgrade(0, 2);
@@ -445,7 +445,7 @@ var getSecondaryEquation = () => {
             break;
     }
 
-    result += theory.latexSymbol + "=\\max\\rho^{0.1}";
+    result += theory.latexSymbol + "=\\max\\rho^{0.4}";
     result += "\\end{array}"
 
     return result;
@@ -503,21 +503,21 @@ var getTertiaryEquation = () => {
 // -------------------------------------------------------------------------------
 
 var get3DGraphPoint = () => swizzles[0]((state - center) * scale);
-var getPublicationMultiplier = (tau) => tau.pow(1.5);
-var getPublicationMultiplierFormula = (symbol) => symbol + "^{1.5}";
+var getPublicationMultiplier = (tau) => tau.pow(0.387);
+var getPublicationMultiplierFormula = (symbol) => symbol + "^{0.387}";
 var isCurrencyVisible = (index) => index == 0 || (index == 1 && dimension.level > 0) || (index == 2 && dimension.level > 1);
-var getTau = () => currency.value.pow(BigNumber.from(0.1));
+var getTau = () => currency.value.pow(BigNumber.from(0.4));
 
 var getQ1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 0);
 var getQ2 = (level) => BigNumber.TWO.pow(level);
 var getA1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getA2 = (level) => Utils.getStepwisePowerSum(level, 50, 10, 0);
+var getA2 = (level) => Utils.getStepwisePowerSum(level, 40, 10, 0);
 var getA3 = (level) => BigNumber.TWO.pow(level);
 var getAExp = (level) => BigNumber.from(1 + 0.25 * level);
 var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getB2 = (level) => BigNumber.from(1.05).pow(level);
+var getB2 = (level) => BigNumber.from(1.1).pow(level);
 var getC1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getC2 = (level) => BigNumber.from(1.05).pow(level);
+var getC2 = (level) => BigNumber.from(1.1).pow(level);
 var getT = (level) => Utils.getStepwisePowerSum(level, 1.01, 10, 1);
 
 init();

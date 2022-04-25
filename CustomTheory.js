@@ -515,7 +515,7 @@ var getTau = () => currency.value.pow(BigNumber.from(0.1));
 var getQ1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 0);
 var getQ2 = (level) => BigNumber.TWO.pow(level);
 var getA1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getA2 = (level) => Utils.getStepwisePowerSum(level, 40, 5, 0);
+var getA2 = (level) => Utils.getStepwisePowerSum(level, 50, 10, 0);
 var getA3 = (level) => BigNumber.TWO.pow(level);
 var getAExp = (level) => BigNumber.from(1 + 0.25 * level);
 var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);

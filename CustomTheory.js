@@ -141,22 +141,22 @@ var init = () => {
     }
 
     // Permanent Upgrades
-    theory.createPublicationUpgrade(0, currency, 0.1);
-    theory.createBuyAllUpgrade(1, currency, 1);
-    theory.createAutoBuyerUpgrade(2, currency, 1);
-
+    theory.createPublicationUpgrade(0, currency, 1e10);
+    theory.createBuyAllUpgrade(1, currency, 1e13);
 
     // t
     {
         let getInfo = (level) => "t=" + getT(level).toString(0);
-        t_speed = theory.createPermanentUpgrade(3, currency, new ExponentialCost(1e20, Math.log2(1e20)));
+        t_speed = theory.createPermanentUpgrade(3, currency, new ExponentialCost(1e15, Math.log2(1e15)));
         t_speed.getDescription = (_) => " $\\uparrow$ Increase t growth";
         t_speed.getInfo = (amount) => Utils.getMathTo(getInfo(t_speed.level), getInfo(t_speed.level + amount));
         t_speed.maxLevel = 4;
     }
 
+    theory.createAutoBuyerUpgrade(2, currency, 1e20);
+
     //// Milestone Upgrades
-    theory.setMilestoneCost(new LinearCost(0.1, 0.1)); // maybe 1e10?
+    theory.setMilestoneCost(new LinearCost(1e10, 1e10)); // maybe 1e10?
 
     {
         dimension = theory.createMilestoneUpgrade(0, 2);

@@ -342,8 +342,11 @@ q
 
     // if graph gets too tall, reset back to 0
     if(graph_t > 32 + ((1 / 100) * (max_R / 1000))) {
-        graph_t = 0;
+        graph_t = BigNumber.ZERO;
         theory.clearGraph();
+        state.x = graph_t.toNumber();
+        state.y = R.toNumber();
+        state.z = I.toNumber();
     }
     theory.invalidatePrimaryEquation();
     theory.invalidateTertiaryEquation();

@@ -156,7 +156,7 @@ var init = () => {
     theory.createAutoBuyerUpgrade(2, currency, 1e20);
 
     //// Milestone Upgrades
-    theory.setMilestoneCost(new LinearCost(1, 1.5)); // maybe 1e10?
+    theory.setMilestoneCost(new LinearCost(4, 4));
 
     {
         dimension = theory.createMilestoneUpgrade(0, 2);

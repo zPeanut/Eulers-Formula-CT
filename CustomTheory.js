@@ -124,8 +124,8 @@ var init = () => {
 
     // a2
     {
-        let getDesc = (level) => "a_2=2^{" + level + "}";
-        let getInfo = (level) => "a_2=" + getQ2(level).toString(0);
+        let getDesc = (level) => "a_2=" + getA2(level).toString(0);
+        let getInfo = (level) => "a_2=" + getA2(level).toString(0);
         a2 = theory.createUpgrade(7, currency_R, new ExponentialCost(500, 2.2));
         a2.getDescription = (_) => Utils.getMath(getDesc(a2.level));
         a2.getInfo = (amount) => Utils.getMathTo(getInfo(a2.level), getInfo(a2.level + amount));
@@ -515,7 +515,7 @@ var getTau = () => currency.value.pow(BigNumber.from(0.1));
 var getQ1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 0);
 var getQ2 = (level) => BigNumber.TWO.pow(level);
 var getA1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getA2 = (level) => BigNumber.TWO.pow(level);
+var getA2 = (level) => Utils.getStepwisePowerSum(level, 40, 5, 0);
 var getA3 = (level) => BigNumber.TWO.pow(level);
 var getAExp = (level) => BigNumber.from(1 + 0.25 * level);
 var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);

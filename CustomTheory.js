@@ -33,7 +33,7 @@ var dimension;
 var scale;
 var R = BigNumber.ZERO;
 var I = BigNumber.ZERO;
-var graph_t;        // graph_t = distance from origin to current x value
+var graph_t;             // graph_t = distance from origin to current x value
 var t = BigNumber.ZERO;  // t = time elapsed ( -> cos(t), sin(t) etc.)
 var max_R, max_I;
 var max_currency;
@@ -107,7 +107,7 @@ var init = () => {
     // c2
     {
         let getDesc = (level) => "c_2=1.05^{" + level + "}";
-        let getInfo = (level) => "c_2=" + getC2(level).toString(0);
+        let getInfo = (level) => "c_2=" + getC2(level).toString(2);
         c2 = theory.createUpgrade(5, currency_I, new ExponentialCost(100, Math.log2(2)));
         c2.getDescription = (_) => Utils.getMath(getDesc(c2.level));
         c2.getInfo = (amount) => Utils.getMathTo(getInfo(c2.level), getInfo(c2.level + amount));
@@ -314,13 +314,13 @@ var tick = (elapsedTime, multiplier) => {
         currency_I.value = 0;
     }
 
+    graph_t += dt / BigNumber.TWO; // diving by 2 so it doesnt go too far from origin
+q
     // this check exists to stop rho from growing when every variable is 0
     // vq1 = 0 basically means at start of every pub
     if(vq1 == BigNumber.ZERO) {
         currency.value = 0;
     } else {
-        graph_t += dt / 2; // diving by 2 so it doesnt go too far from origin
-
         switch (dimension.level) {
             case 0:
                 currency.value += base_currency_multiplier * (t * q.pow(BigNumber.TWO)).sqrt();

@@ -23,7 +23,7 @@ var c1, c2;
 var q = BigNumber.ONE;
 
 // permanent upgrade variables
-var t_speed;    // t_multiplier = multiplies dt by given value (1 + t_multiplier * dt)
+var t_speed, resetT;    // t_multiplier = multiplies dt by given value (1 + t_multiplier * dt)
 
 // milestone variables
 var a_base, a_exp, a_term;
@@ -155,6 +155,14 @@ var init = () => {
     theory.createPublicationUpgrade(0, currency, 1e10);
     theory.createBuyAllUpgrade(1, currency, 1e13);
     theory.createAutoBuyerUpgrade(2, currency, 1e20);
+
+    // t
+    {
+        resetT = theory.createPermanentUpgrade(3, currency, new FreeCost());
+        resetT.getDescription = (_) => "Reset t to 1";
+        resetT.getInfo = (amount) => "peanut codeTM";
+        resetT.boughtOrRefunded = (_) => t_speed.level = 0;
+    }
 
 
     // Milestone Upgrades

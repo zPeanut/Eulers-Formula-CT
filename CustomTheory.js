@@ -21,9 +21,7 @@ var a1, a2, a3;
 var b1, b2;
 var c1, c2;
 var q = BigNumber.ONE;
-
-// permanent upgrade variables
-var t_speed, resetT;    // t_multiplier = multiplies dt by given value (1 + t_multiplier * dt)
+var nuclearOption, nBool;
 
 // milestone variables
 var a_base, a_exp, a_term;
@@ -33,8 +31,9 @@ var dimension;
 var scale;
 var R = BigNumber.ZERO;
 var I = BigNumber.ZERO;
-var graph_t;             // graph_t = distance from origin to current x value
-var t = BigNumber.ZERO;  // t = time elapsed ( -> cos(t), sin(t) etc.)
+var t_graph = BigNumber.ZERO;   // distance from origin to current x value
+var t_speed;                    // multiplies dt by given value (1 + t_multiplier * dt)
+var t = BigNumber.ZERO;         // time elapsed ( -> cos(t), sin(t) etc.)
 var max_R, max_I;
 var max_currency;
 
@@ -49,7 +48,6 @@ var init = () => {
     currency_R = theory.createCurrency("R", "R");
     currency_I = theory.createCurrency("I", "I");
 
-    graph_t = 0;
     max_currency = BigNumber.ZERO;
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
@@ -60,8 +58,8 @@ var init = () => {
 
     // t
     {
-        let getDesc = (level) => "t=" + getT(level).toString(0);
-        let getInfo = (level) => "t=" + getT(level).toString(0);
+        let getDesc = (level) => "\\dot{t}=" + getT(level).toString(0);
+        let getInfo = (level) => "\\dot{t}=" + getT(level).toString(0);
         t_speed = theory.createUpgrade(0, currency, new ExponentialCost(1e6, Math.log2(1e6)));
         t_speed.getDescription = (_) => Utils.getMath(getDesc(t_speed.level));
         t_speed.getInfo = (amount) => Utils.getMathTo(getInfo(t_speed.level), getInfo(t_speed.level + amount));
@@ -156,9 +154,17 @@ var init = () => {
     theory.createBuyAllUpgrade(1, currency, 1e13);
     theory.createAutoBuyerUpgrade(2, currency, 1e20);
 
+    // t
+    {
+        nuclearOption = theory.createPermanentUpgrade(3, currency, new FreeCost());
+        nuclearOption.getDescription = (_) => "Let theory explode";
+        nuclearOption.getInfo = (amount) => "$q_2\\; \\rightarrow \\;q_2^{10}$";
+        nuclearOption.boughtOrRefunded = (_) => nBool = !nBool;
+    }
+
 
     // Milestone Upgrades
-    theory.setMilestoneCost(new CustomCost(lvl => BigNumber.from(lvl < 6 ? 4 : 8)));
+    theory.setMilestoneCost(new CustomCost(total => BigNumber.from(total < 6 ? 4*(1+total) : 24 + 8*(total-5))));
 
     {
         dimension = theory.createMilestoneUpgrade(0, 2);
@@ -229,7 +235,7 @@ var updateAvailability = () => {
 var postPublish = () => {
     scale = 0.2;
     max_currency = BigNumber.ZERO;
-    graph_t = 0;
+    t_graph = BigNumber.ZERO;
     t = BigNumber.ZERO;
     q = BigNumber.ONE;
 }
@@ -244,9 +250,9 @@ var setInternalState = (state) => {
 
 var checkForScale = () => {
     if(max_R > 1.5 / scale || max_I > 1.5 / scale) { // scale down everytime R or I gets larger than the screen
-        graph_t = 0;
+        t_graph = BigNumber.ZERO;
         theory.clearGraph();
-        state.x = graph_t;
+        state.x = t_graph.toNumber();
         state.y = R.toNumber();
         state.z = I.toNumber();
         let old_scale = scale; // save previous scale
@@ -262,12 +268,11 @@ var tick = (elapsedTime, multiplier) => {
     // q calc
     let vq1 = getQ1(q1.level);
     let vq2 = getQ2(q2.level);
-    q += vq1 * vq2 * dt * bonus;
+    q += vq1 * vq2.pow(nBool ? BigNumber.TEN : BigNumber.ONE) * dt * bonus;
 
     // t calc
-    let t_multiplier_level = getT(t_speed.level);
     if(q1.level != 0) {
-        t += (t_multiplier_level / 6.9) * dt;
+        t += ((1 + t_speed.level) / 5) * dt;
     }
 
     // a calc
@@ -319,8 +324,8 @@ var tick = (elapsedTime, multiplier) => {
         currency_I.value = 0;
     }
 
-    graph_t += dt / 1.5; // diving by 2 so it doesnt go too far from origin
-q
+    t_graph += dt / (scale * BigNumber.TEN);
+
     // this check exists to stop rho from growing when every variable is 0
     // vq1 = 0 basically means at start of every pub
     if(vq1 == BigNumber.ZERO) {
@@ -341,19 +346,20 @@ q
     }
 
     // graph drawn
-    state.x = graph_t.toNumber();
+    state.x = t_graph.toNumber();
     state.y = R.toNumber();
     state.z = I.toNumber();
 
     // if graph gets too tall, reset back to 0
-    if(graph_t > 32 + ((1 / 100) * (max_R / 1000))) {
-        graph_t = 0;
+    if(t_graph > BigNumber.from(32) / (scale * BigNumber.TEN)) {
+        t_graph = BigNumber.ZERO;
         theory.clearGraph();
-        state.x = graph_t;
+        state.x = t_graph.toNumber();
         state.y = R.toNumber();
         state.z = I.toNumber();
     }
     theory.invalidatePrimaryEquation();
+    theory.invalidateSecondaryEquation();
     theory.invalidateTertiaryEquation();
 
     // constantly check for scale
@@ -365,7 +371,7 @@ q
 // EQUATIONS
 // -------------------------------------------------------------------------------
 var getPrimaryEquation = () => {
-    theory.primaryEquationHeight = 70;
+    theory.primaryEquationHeight = 60;
     let result = "\\begin{array}{c}\\dot{\\rho} = ";
 
     // let a draw on equation
@@ -405,11 +411,11 @@ var getPrimaryEquation = () => {
             result += "G(t) = \\cos(t) + i\\sin(t)";
             break;
         case 1:
-            result += "\\sqrt{tq^2 + R_2^{\\;2}\\text{ }}\\\\";
+            result += "\\sqrt{tq^2 + R_2^{2}\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + i\\sin(t)";
             break;
         case 2:
-            result += "\\sqrt{\\text{\\,}tq^2 + R_2^{\\;2}\\; + \\; I_3^{\\;2}\\text{ }}\\\\";
+            result += "\\sqrt{\\text{\\,}tq^2 + R^{2} + I^{2}\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + ci\\sin(t)";
             break;
     }
@@ -419,18 +425,21 @@ var getPrimaryEquation = () => {
 }
 
 var getSecondaryEquation = () => {
-    theory.secondaryEquationHeight = 50;
+    theory.secondaryEquationHeight = 70;
     let result = "\\begin{array}{c}";
 
+    if(nBool) {
+        result += "\\text{Nuclear option activated}\\\\"
+    }
     switch(dimension.level) {
         case 0:
             result += "\\dot{q} = q_1q_2\\quad\\\\";
             break;
         case 1:
-            result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(t)\\\\";
+            result += "\\dot{q} = q_1q_2,\\quad\\dot{R_2} = b_1b_2\\cos(t)\\\\";
             break;
         case 2:
-            result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(t),\\quad\\dot{I} = -(ic_1c_2\\sin(t))^2\\\\";
+            result += "\\dot{q} = q_1q_2,\\quad\\dot{R_2} = b_1b_2\\cos(t),\\quad\\dot{I_3} = -(ic_1c_2\\sin(t))^2\\\\";
             break;
     }
 
@@ -500,7 +509,7 @@ var getTau = () => currency.value.pow(BigNumber.from(0.4));
 var getQ1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 0);
 var getQ2 = (level) => BigNumber.TWO.pow(level);
 var getA1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getA2 = (level) => Utils.getStepwisePowerSum(level, 40, 10, 0);
+var getA2 = (level) => Utils.getStepwisePowerSum(level, 40, 10, 1);
 var getA3 = (level) => BigNumber.TWO.pow(level);
 var getAExp = (level) => BigNumber.from(1 + 0.1 * level);
 var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
@@ -508,5 +517,4 @@ var getB2 = (level) => BigNumber.from(1.1).pow(level);
 var getC1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 var getC2 = (level) => BigNumber.from(1.1).pow(level);
 var getT = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-
 init();

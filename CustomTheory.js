@@ -156,14 +156,6 @@ var init = () => {
     theory.createBuyAllUpgrade(1, currency, 1e13);
     theory.createAutoBuyerUpgrade(2, currency, 1e20);
 
-    // t
-    {
-        resetT = theory.createPermanentUpgrade(3, currency, new FreeCost());
-        resetT.getDescription = (_) => "Reset t to 1";
-        resetT.getInfo = (amount) => "peanut codeTM";
-        resetT.boughtOrRefunded = (_) => t_speed.level = 0;
-    }
-
 
     // Milestone Upgrades
     theory.setMilestoneCost(new CustomCost(lvl => BigNumber.from(lvl < 6 ? 4 : 8)));
@@ -183,9 +175,9 @@ var init = () => {
     }
 
     {
-        a_exp = theory.createMilestoneUpgrade(2, 4);
-        a_exp.getDescription = (_) => Localization.getUpgradeIncCustomExpDesc("a", "0.25");
-        a_exp.getInfo = (_) => Localization.getUpgradeIncCustomExpInfo("a", "0.25");
+        a_exp = theory.createMilestoneUpgrade(2, 5);
+        a_exp.getDescription = (_) => Localization.getUpgradeIncCustomExpDesc("a", "0.1");
+        a_exp.getInfo = (_) => Localization.getUpgradeIncCustomExpInfo("a", "0.1");
         a_exp.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
@@ -275,7 +267,7 @@ var tick = (elapsedTime, multiplier) => {
     // t calc
     let t_multiplier_level = getT(t_speed.level);
     if(q1.level != 0) {
-        t += ((1 + t_multiplier_level) * dt / 10) + (q.log().log()).abs() / 18;
+        t += (t_multiplier_level / 6.9) * dt;
     }
 
     // a calc
@@ -379,23 +371,7 @@ var getPrimaryEquation = () => {
     // let a draw on equation
     let a_eq_base = "";
     let a_eq_term = "";
-    let a_eq_exp = "";
-    switch(a_exp.level) {
-        case 0:
-        case 4:
-            // 1 and 2
-            a_eq_exp = getAExp(a_exp.level).toString(0);
-            break;
-        case 1:
-        case 3:
-            // 1.25 and 1.75
-            a_eq_exp = getAExp(a_exp.level).toString(2);
-            break;
-        case 2:
-            // 1.5
-            a_eq_exp = getAExp(a_exp.level).toString(1);
-            break;
-    }
+    let a_eq_exp = getAExp(a_exp.level).toString(1);
     switch(a_base.level) {
         case 0:
             a_eq_base = "a_1";
@@ -526,7 +502,7 @@ var getQ2 = (level) => BigNumber.TWO.pow(level);
 var getA1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 var getA2 = (level) => Utils.getStepwisePowerSum(level, 40, 10, 0);
 var getA3 = (level) => BigNumber.TWO.pow(level);
-var getAExp = (level) => BigNumber.from(1 + 0.25 * level);
+var getAExp = (level) => BigNumber.from(1 + 0.1 * level);
 var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 var getB2 = (level) => BigNumber.from(1.1).pow(level);
 var getC1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);

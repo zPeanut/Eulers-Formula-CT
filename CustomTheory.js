@@ -1,4 +1,4 @@
-﻿import { ExponentialCost, FreeCost, LinearCost } from "./api/Costs";
+﻿import {CustomCost, ExponentialCost, FreeCost, LinearCost} from "./api/Costs";
 import { Localization } from "./api/Localization";
 import {BigNumber, parseBigNumber} from "./api/BigNumber";
 import {QuaternaryEntry, theory} from "./api/Theory";
@@ -49,7 +49,7 @@ var init = () => {
     currency_R = theory.createCurrency("R", "R");
     currency_I = theory.createCurrency("I", "I");
 
-    graph_t = BigNumber.ZERO;
+    graph_t = 0;
     max_currency = BigNumber.ZERO;
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
@@ -58,11 +58,21 @@ var init = () => {
 
     // Regular Upgrades
 
+    // t
+    {
+        let getDesc = (level) => "t=" + getT(level).toString(0);
+        let getInfo = (level) => "t=" + getT(level).toString(0);
+        t_speed = theory.createUpgrade(0, currency, new ExponentialCost(1e6, Math.log2(1e6)));
+        t_speed.getDescription = (_) => Utils.getMath(getDesc(t_speed.level));
+        t_speed.getInfo = (amount) => Utils.getMathTo(getInfo(t_speed.level), getInfo(t_speed.level + amount));
+        t_speed.maxLevel = 4;
+    }
+
     // q1
     {
         let getDesc = (level) => "q_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "q_1=" + getQ1(level).toString(0);
-        q1 = theory.createUpgrade(0, currency, new FirstFreeCost(new ExponentialCost(10, Math.log2(1.61328))));
+        q1 = theory.createUpgrade(1, currency, new FirstFreeCost(new ExponentialCost(10, Math.log2(1.61328))));
         q1.getDescription = (_) => Utils.getMath(getDesc(q1.level));
         q1.getInfo = (amount) => Utils.getMathTo(getDesc(q1.level), getDesc(q1.level + amount));
     }
@@ -71,7 +81,7 @@ var init = () => {
     {
         let getDesc = (level) => "q_2=2^{" + level + "}";
         let getInfo = (level) => "q_2=" + getQ2(level).toString(0);
-        q2 = theory.createUpgrade(1, currency, new ExponentialCost(5, Math.log2(64)));
+        q2 = theory.createUpgrade(2, currency, new ExponentialCost(5, Math.log2(60)));
         q2.getDescription = (_) => Utils.getMath(getDesc(q2.level));
         q2.getInfo = (amount) => Utils.getMathTo(getInfo(q2.level), getInfo(q2.level + amount));
     }
@@ -80,7 +90,7 @@ var init = () => {
     {
         let getDesc = (level) => "b_1=" + getB1(level).toString(0);
         let getInfo = (level) => "b_1=" + getB1(level).toString(0);
-        b1 = theory.createUpgrade(2, currency_R, new FirstFreeCost(ExponentialCost(20, Math.log2(200))));
+        b1 = theory.createUpgrade(3, currency_R, new FirstFreeCost(ExponentialCost(20, Math.log2(200))));
         b1.getDescription = (_) => Utils.getMath(getDesc(b1.level));
         b1.getInfo = (amount) => Utils.getMathTo(getDesc(b1.level), getDesc(b1.level + amount));
     }
@@ -89,7 +99,7 @@ var init = () => {
     {
         let getDesc = (level) => "b_2=1.1^{" + level + "}";
         let getInfo = (level) => "b_2=" + getB2(level).toString(2);
-        b2 = theory.createUpgrade(3, currency_R, new ExponentialCost(100, Math.log2(2)));
+        b2 = theory.createUpgrade(4, currency_R, new ExponentialCost(100, Math.log2(2)));
         b2.getDescription = (_) => Utils.getMath(getDesc(b2.level));
         b2.getInfo = (amount) => Utils.getMathTo(getInfo(b2.level), getInfo(b2.level + amount));
     }
@@ -99,7 +109,7 @@ var init = () => {
     {
         let getDesc = (level) => "c_1=" + getC1(level).toString(0);
         let getInfo = (level) => "c_1=" + getC1(level).toString(0);
-        c1 = theory.createUpgrade(4, currency_I, new FirstFreeCost(new ExponentialCost(20, Math.log2(200))));
+        c1 = theory.createUpgrade(5, currency_I, new FirstFreeCost(new ExponentialCost(20, Math.log2(200))));
         c1.getDescription = (_) => Utils.getMath(getDesc(c1.level));
         c1.getInfo = (amount) => Utils.getMathTo(getDesc(c1.level), getDesc(c1.level + amount));
     }
@@ -108,7 +118,7 @@ var init = () => {
     {
         let getDesc = (level) => "c_2=1.1^{" + level + "}";
         let getInfo = (level) => "c_2=" + getC2(level).toString(2);
-        c2 = theory.createUpgrade(5, currency_I, new ExponentialCost(100, Math.log2(2)));
+        c2 = theory.createUpgrade(6, currency_I, new ExponentialCost(100, Math.log2(2)));
         c2.getDescription = (_) => Utils.getMath(getDesc(c2.level));
         c2.getInfo = (amount) => Utils.getMathTo(getInfo(c2.level), getInfo(c2.level + amount));
     }
@@ -117,7 +127,7 @@ var init = () => {
     {
         let getDesc = (level) => "a_1=" + getA1(level).toString(0);
         let getInfo = (level) => "a_1=" + getA1(level).toString(0);
-        a1 = theory.createUpgrade(6, currency, new FirstFreeCost(new ExponentialCost(2000, 2.2)));
+        a1 = theory.createUpgrade(7, currency, new FirstFreeCost(new ExponentialCost(2000, 2.2)));
         a1.getDescription = (_) => Utils.getMath(getDesc(a1.level));
         a1.getInfo = (amount) => Utils.getMathTo(getDesc(a1.level), getDesc(a1.level + amount));
     }
@@ -126,7 +136,7 @@ var init = () => {
     {
         let getDesc = (level) => "a_2=" + getA2(level).toString(0);
         let getInfo = (level) => "a_2=" + getA2(level).toString(0);
-        a2 = theory.createUpgrade(7, currency_R, new ExponentialCost(500, 2.2));
+        a2 = theory.createUpgrade(8, currency_R, new ExponentialCost(500, 2.2));
         a2.getDescription = (_) => Utils.getMath(getDesc(a2.level));
         a2.getInfo = (amount) => Utils.getMathTo(getInfo(a2.level), getInfo(a2.level + amount));
     }
@@ -135,28 +145,20 @@ var init = () => {
     {
         let getDesc = (level) => "a_3=2^{" + level + "}";
         let getInfo = (level) => "a_3=" + getQ2(level).toString(0);
-        a3 = theory.createUpgrade(8, currency_I, new ExponentialCost(500, 2.2));
+        a3 = theory.createUpgrade(9, currency_I, new ExponentialCost(500, 2.2));
         a3.getDescription = (_) => Utils.getMath(getDesc(a3.level));
         a3.getInfo = (amount) => Utils.getMathTo(getInfo(a3.level), getInfo(a3.level + amount));
     }
 
+
     // Permanent Upgrades
     theory.createPublicationUpgrade(0, currency, 1e10);
     theory.createBuyAllUpgrade(1, currency, 1e13);
-
-    // t
-    {
-        let getInfo = (level) => "t=" + getT(level).toString(0);
-        t_speed = theory.createPermanentUpgrade(3, currency, new ExponentialCost(1e15, Math.log2(1e15)));
-        t_speed.getDescription = (_) => " $\\uparrow$ Increase t growth";
-        t_speed.getInfo = (amount) => Utils.getMathTo(getInfo(t_speed.level), getInfo(t_speed.level + amount));
-        t_speed.maxLevel = 4;
-    }
-
     theory.createAutoBuyerUpgrade(2, currency, 1e20);
 
-    //// Milestone Upgrades
-    theory.setMilestoneCost(new LinearCost(4, 4));
+
+    // Milestone Upgrades
+    theory.setMilestoneCost(new CustomCost(lvl => BigNumber.from(lvl < 6 ? 4 : 8)));
 
     {
         dimension = theory.createMilestoneUpgrade(0, 2);
@@ -227,7 +229,7 @@ var updateAvailability = () => {
 var postPublish = () => {
     scale = 0.2;
     max_currency = BigNumber.ZERO;
-    graph_t = BigNumber.ZERO;
+    graph_t = 0;
     t = BigNumber.ZERO;
     q = BigNumber.ONE;
 }
@@ -241,11 +243,14 @@ var setInternalState = (state) => {
 }
 
 var checkForScale = () => {
-    if(max_R > 1.3 / scale || max_I > 1.3 / scale) { // scale down everytime R or I gets larger than the screen
+    if(max_R > 1.5 / scale || max_I > 1.5 / scale) { // scale down everytime R or I gets larger than the screen
         graph_t = 0;
         theory.clearGraph();
+        state.x = graph_t;
+        state.y = R.toNumber();
+        state.z = I.toNumber();
         let old_scale = scale; // save previous scale
-        scale = (50 / 100) * old_scale // scale down by 50%
+        scale = (60 / 100) * old_scale // scale down by 50%
     }
 }
 
@@ -314,7 +319,7 @@ var tick = (elapsedTime, multiplier) => {
         currency_I.value = 0;
     }
 
-    graph_t += dt / BigNumber.TWO; // diving by 2 so it doesnt go too far from origin
+    graph_t += dt / 1.5; // diving by 2 so it doesnt go too far from origin
 q
     // this check exists to stop rho from growing when every variable is 0
     // vq1 = 0 basically means at start of every pub
@@ -342,9 +347,9 @@ q
 
     // if graph gets too tall, reset back to 0
     if(graph_t > 32 + ((1 / 100) * (max_R / 1000))) {
-        graph_t = BigNumber.ZERO;
+        graph_t = 0;
         theory.clearGraph();
-        state.x = graph_t.toNumber();
+        state.x = graph_t;
         state.y = R.toNumber();
         state.z = I.toNumber();
     }
@@ -518,6 +523,6 @@ var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 var getB2 = (level) => BigNumber.from(1.1).pow(level);
 var getC1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 var getC2 = (level) => BigNumber.from(1.1).pow(level);
-var getT = (level) => Utils.getStepwisePowerSum(level, 1.01, 10, 1);
+var getT = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 
 init();

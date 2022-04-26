@@ -4,12 +4,13 @@ import {BigNumber, parseBigNumber} from "./api/BigNumber";
 import {QuaternaryEntry, theory} from "./api/Theory";
 import {log, Utils} from "./api/Utils";
 import {GraphQuality} from "./api/Settings";
+import {ui} from "./api/ui/UI";
 
 var id = "eulers_formula";
 var name = "Euler's Formula";
 var description = "A theory about Euler's formula.";
 var authors = "peanut & Snaeky";
-var version = 1;
+var version = "beta-26042022\\_1";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -258,6 +259,11 @@ var checkForScale = () => {
         let old_scale = scale; // save previous scale
         scale = (60 / 100) * old_scale // scale down by 50%
     }
+}
+
+var getEquationOverlay = (_) => {
+    let result = ui.createLatexLabel({text: version, displacementY: 4, displacementX: 4, fontSize: 9, textColor: Color.TEXT_MEDIUM});
+    return result;
 }
 
 var tick = (elapsedTime, multiplier) => {
@@ -517,4 +523,5 @@ var getB2 = (level) => BigNumber.from(1.1).pow(level);
 var getC1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 var getC2 = (level) => BigNumber.from(1.1).pow(level);
 var getT = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
+
 init();

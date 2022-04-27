@@ -462,13 +462,13 @@ var getSecondaryEquation = () => {
     }
     switch(dimension.level) {
         case 0:
-            result += "\\dot{q} = q_1q_2\\quad\\\\";
+            result += "\\dot{q} = q_1q_2\\\\";
             break;
         case 1:
-            result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(t)\\\\";
+            result += "\\dot{q} = q_1q_2,\\;\\dot{R} = b_1b_2\\cos(t)\\\\";
             break;
         case 2:
-            result += "\\dot{q} = q_1q_2,\\quad\\dot{R\\text{ }} = b_1b_2\\cos(t),\\quad\\dot{I\\text{ }} = -(ic_1c_2\\sin(t))^2\\\\";
+            result += "\\dot{q} = q_1q_2,\\;\\dot{R} = b_1b_2\\cos(t),\\;\\dot{I} = -(ic_1c_2\\sin(t))^2\\\\";
             break;
     }
 

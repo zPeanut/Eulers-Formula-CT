@@ -10,7 +10,7 @@ var id = "eulers_formula";
 var name = "Euler's Formula";
 var description = "A theory about Euler's formula.";
 var authors = "peanut & Snaeky";
-var version = "beta-26042022\\_1";
+var version = "beta-27042022\\_1";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -165,13 +165,20 @@ var init = () => {
 
 
     // Milestone Upgrades
-    theory.setMilestoneCost(new CustomCost(total => BigNumber.from(total < 6 ? 4*(1+total) : 24 + 8*(total-5))));
+    theory.setMilestoneCost(new CustomCost(total => BigNumber.from(total < 5 ? 4*(1+total) : 24 + 8*(total-4))));
 
     {
         dimension = theory.createMilestoneUpgrade(0, 2);
         dimension.getDescription = () => dimension.level == 0 ? "Unlock the real component R" : "Unlock the imaginary component I";
         dimension.getInfo = () => Localization.getUpgradeAddDimensionDesc();
-        dimension.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); theory.invalidateSecondaryEquation(); theory.invalidateTertiaryEquation(); updateAvailability();}
+        dimension.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); theory.invalidateSecondaryEquation(); theory.invalidateTertiaryEquation(); updateAvailability(); }
+        dimension.refunded = (_) => {
+            if(dimension.level == 1) {
+                a_term.level = 0;
+                a_exp.level = 0;
+                a_base.level = 0;
+            }
+        }
     }
 
     {
@@ -247,10 +254,14 @@ var setInternalState = (state) => {
     let values = state.split(" ");
     if (values.length > 0) q = parseBigNumber(values[0]);
     if (values.length > 1) t = parseBigNumber(values[1]);
+    theory.clearGraph();
+    state.x = t_graph.toNumber();
+    state.y = R.toNumber();
+    state.z = I.toNumber();
 }
 
 var checkForScale = () => {
-    if(max_R > 1.5 / scale || max_I > 1.5 / scale) { // scale down everytime R or I gets larger than the screen
+    if(max_R > 1.3 / scale || max_I > 1.3 / scale) { // scale down everytime R or I gets larger than the screen
         t_graph = BigNumber.ZERO;
         theory.clearGraph();
         state.x = t_graph.toNumber();
@@ -265,6 +276,9 @@ var getEquationOverlay = (_) => {
     let result = ui.createLatexLabel({text: version, displacementY: 4, displacementX: 4, fontSize: 9, textColor: Color.TEXT_MEDIUM});
     return result;
 }
+
+// TODO: add this when new update releases
+// var get3DGraphTranslation = () => swizzles[0]((new Vector3(-t_graph.toNumber() + 6, 0, 0) - center) * scale);
 
 var tick = (elapsedTime, multiplier) => {
 
@@ -317,26 +331,20 @@ var tick = (elapsedTime, multiplier) => {
 
     let base_currency_multiplier = dt * bonus;
 
-    // R2 and I3 calculation (currency)
-    if(dimension.level > 0) {
-        currency_R.value += base_currency_multiplier * (R.abs()).pow(BigNumber.TWO); // abs so currency cannot go negative
-    } else {                                                                         // squared on request of snaeky
-        currency_R.value = 0;
-    }
 
-    if(dimension.level > 1) {
-        currency_I.value += base_currency_multiplier * (I.abs()).pow(BigNumber.TWO); // -,,-
-    } else {
-        currency_I.value = 0;
-    }
+
 
     t_graph += dt / (scale * BigNumber.TEN);
 
     // this check exists to stop rho from growing when every variable is 0
-    // vq1 = 0 basically means at start of every pub
-    if(vq1 == BigNumber.ZERO) {
+    // q1 = 0 basically means at start of every pub
+    if(q1.level == 0) {
         currency.value = 0;
+        currency_I.value = 0;
+        currency_R.value = 0;
     } else {
+
+        // rho calculation
         switch (dimension.level) {
             case 0:
                 currency.value += base_currency_multiplier * (t * q.pow(BigNumber.TWO)).sqrt();
@@ -349,6 +357,20 @@ var tick = (elapsedTime, multiplier) => {
                 break;
         }
         max_currency = max_currency.max(currency.value);
+
+        // R2 calculation
+        if(dimension.level > 0) {
+            currency_R.value += base_currency_multiplier * (R.abs()).pow(BigNumber.TWO); // abs so currency cannot go negative
+        } else {                                                                         // squared on request of snaeky
+            currency_R.value = 0;
+        }
+
+        // I3 calculation
+        if(dimension.level > 1) {
+            currency_I.value += base_currency_multiplier * (I.abs()).pow(BigNumber.TWO); // -,,-
+        } else {
+            currency_I.value = 0;
+        }
     }
 
     // graph drawn
@@ -364,6 +386,7 @@ var tick = (elapsedTime, multiplier) => {
         state.y = R.toNumber();
         state.z = I.toNumber();
     }
+
     theory.invalidatePrimaryEquation();
     theory.invalidateSecondaryEquation();
     theory.invalidateTertiaryEquation();
@@ -417,11 +440,11 @@ var getPrimaryEquation = () => {
             result += "G(t) = \\cos(t) + i\\sin(t)";
             break;
         case 1:
-            result += "\\sqrt{tq^2 + R_2^{2}\\text{ }}\\\\";
+            result += "\\sqrt{tq^2 + |\\,R_2^{2}\\,|\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + i\\sin(t)";
             break;
         case 2:
-            result += "\\sqrt{\\text{\\,}tq^2 + R^{2} + I^{2}\\text{ }}\\\\";
+            result += "\\sqrt{\\text{\\,}tq^2 + |R_{2}|^{2} + |I_{3}|^{2}\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + ci\\sin(t)";
             break;
     }
@@ -442,10 +465,10 @@ var getSecondaryEquation = () => {
             result += "\\dot{q} = q_1q_2\\quad\\\\";
             break;
         case 1:
-            result += "\\dot{q} = q_1q_2,\\quad\\dot{R_2} = b_1b_2\\cos(t)\\\\";
+            result += "\\dot{q} = q_1q_2,\\quad\\dot{R} = b_1b_2\\cos(t)\\\\";
             break;
         case 2:
-            result += "\\dot{q} = q_1q_2,\\quad\\dot{R_2} = b_1b_2\\cos(t),\\quad\\dot{I_3} = -(ic_1c_2\\sin(t))^2\\\\";
+            result += "\\dot{q} = q_1q_2,\\quad\\dot{R\\text{ }} = b_1b_2\\cos(t),\\quad\\dot{I\\text{ }} = -(ic_1c_2\\sin(t))^2\\\\";
             break;
     }
 

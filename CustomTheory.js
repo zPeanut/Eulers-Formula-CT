@@ -29,9 +29,11 @@ var description = "You're a student hired by a professor at a famous university.
     "We hope you enjoy playing this theory as much as we had developing it and coming up with ideas for it!\n" +
     "\n" +
     "- The Eulers-Formula-CT Development Team"
+
 var authors = "Snaeky (SnaekySnacks#1161) - Idea, General Structuring\n" +
     "peanut (peanut#6368) - Developer"
-var version = "beta-28042022\\_2";
+
+var version = "beta-28042022\\_3";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -88,8 +90,8 @@ var init = () => {
 
     // t
     {
-        let getDesc = (level) => "\\dot{t}=" + getT(level).toString(0);
-        let getInfo = (level) => "\\dot{t}=" + getT(level).toString(0);
+        let getDesc = (level) => "\\dot{t}=" + 0.2 * getT(level).toString(0);
+        let getInfo = (level) => "\\dot{t}=" + 0.2 * getT(level).toString(0);
         t_speed = theory.createUpgrade(0, currency, new ExponentialCost(1e6, Math.log2(1e6)));
         t_speed.getDescription = (_) => Utils.getMath(getDesc(t_speed.level));
         t_speed.getInfo = (amount) => Utils.getMathTo(getInfo(t_speed.level), getInfo(t_speed.level + amount));
@@ -320,6 +322,7 @@ var tick = (elapsedTime, multiplier) => {
     let vq2 = getQ2(q2.level);
     q += vq1 * vq2.pow(nBool ? BigNumber.TEN : BigNumber.ONE) * dt * bonus;
 
+    let maxT = BigNumber.ZERO;
     // t calc
     if(q1.level != 0) {
         t += ((1 + t_speed.level) / 5) * dt;
@@ -405,6 +408,15 @@ var tick = (elapsedTime, multiplier) => {
     state.x = t_graph.toNumber();
     state.y = R.toNumber();
     state.z = I.toNumber();
+
+    // if graph gets too tall, reset back to 0
+    if(t_graph > BigNumber.from(32) / (scale * BigNumber.TEN)) {
+        t_graph = BigNumber.ZERO;
+        theory.clearGraph();
+        state.x = t_graph.toNumber();
+        state.y = R.toNumber();
+        state.z = I.toNumber();
+    }
 
     theory.invalidatePrimaryEquation();
     theory.invalidateSecondaryEquation();

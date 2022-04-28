@@ -8,9 +8,30 @@ import {ui} from "./api/ui/UI";
 
 var id = "eulers_formula";
 var name = "Euler's Formula";
-var description = "A theory about Euler's formula.";
-var authors = "peanut & Snaeky";
-var version = "beta-28042022\\_1";
+var description = "You're a student hired by a professor at a famous university. Since your works have been successful in the past, and have received a lot of attention from your colleagues, you decide to go into a subject not yet covered by your old professor, which has  interested you since day 1 of deciding to study mathematics - Complex Numbers. \n" +
+    "You hope that with your research into this subject, you can finally get your breakthrough you always wanted in the scientific world.\n" +
+    "\n" +
+    "This theory explores the world of complex numbers, their arrangement and proves that i is an integral part of mathematics, on which basic math is functioning on. The theory, named after famous mathematician Leonhard Euler and first stated by Roger Cotes in 1714, explores the relationship between exponential functions and trigonometric functions.\n" +
+    "Your task is to use this formula, and with the help of the pythagorean theorem, calculate the distances of cos(t) and isin(t) from the origin, and grow them as large as possible using many different methods and even modifying the formula using multipliers of sine and cosine!\n" +
+    "\n" +
+    "Huge thanks to:\n" +
+    "\n" +
+    "- Gilles-Philippe, for implementing integral features we proposed, helping us a *ton* during development, answering our questions and giving us beta features to use in our theories! \n" +
+    "\n" +
+    "- XLII, for helping us a TON during balancing, deciding various integral features of the theory such as but not limited to: milestone placement, milestone costs, publish multipliers and a lot more!\n" +
+    "\n" +
+    "- The entire discord community, who've playtested this theory and reported many bugs, especially those active at #custom-theories-dev\n" +
+    "\n" +
+    "and of course a personal thanks from peanut to:\n" +
+    "\n" +
+    "- Snaeky, without whom this theory would not have been possible as he was the one with the original idea of structuring a theory around Euler's Formula, and always answering my questions and motivating all of us to push this theory forwards.\n" +
+    "\n" +
+    "We hope you enjoy playing this theory as much as we had developing it and coming up with ideas for it!\n" +
+    "\n" +
+    "- The Eulers-Formula-CT Development Team"
+var authors = "Snaeky (SnaekySnacks#1161) - Idea, General Structuring\n" +
+    "peanut (peanut#6368) - Developer"
+var version = "beta-28042022\\_2";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -42,6 +63,14 @@ var max_currency;
 var state = new Vector3(0, 0, 0);
 var center = new Vector3(0, 0, 0);
 var swizzles = [(v) => new Vector3(v.y, v.z, v.x), (v) => new Vector3(v.y, v.z, v.x), (v) => new Vector3(v.x, v.y, v.z)];
+
+// story variables
+var chapter1;
+
+// achievment variables
+var achievement1;
+
+
 
 var init = () => {
     scale = 0.2;
@@ -202,19 +231,20 @@ var init = () => {
         a_base.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
-    /*
+    var achievement_category_1 = theory.createAchievementCategory(0, "Publications");
+    var achievement_category_2 = theory.createAchievementCategory(1, "Currencies");
 
-        TODO
+    // Story chapters
 
-        //// Achievements
-        achievement1 = theory.createAchievement(0, "Achievement 1", "Description 1", () => q1.level > 1);
-        achievement2 = theory.createSecretAchievement(1, "Achievement 2", "Description 2", "Maybe you should buy two levels of q2?", () => q2.level > 1);
-
-        TODO
-
-        //// Story chapters
-
-        */
+    let storyChapter1 = "";
+    storyChapter1 += "One of your students comes to you with a problem.\n"
+    storyChapter1 += "They say, \"Professor, all the other experts in our field keep saying that this equation can't be used to further our research, \nbut I think I can get something out of it.\"\n\n"
+    storyChapter1 += "He hands you the paper with e^ix = cos(x) + i * sin(x).\n"
+    storyChapter1 += "You look at him and say,\n";
+    storyChapter1 += "This is Eulers Identity, are you sure you can get work out of something that has imaginary numbers?\"\n";
+    storyChapter1 += "\"Yes! I believe I can!\"\n\n\n";
+    storyChapter1 += "You give them the green light to work on the project.";
+    chapter1 = theory.createStoryChapter(0, "Circular Reasoning", storyChapter1, () => q1.level == 0); //unlock story chapter when a1 is purchased
 
     updateAvailability();
 }
@@ -277,7 +307,7 @@ var getEquationOverlay = (_) => {
     return result;
 }
 
-// TODO: add this when new update releases
+// TODO: release this when new update comes out
 // var get3DGraphTranslation = () => swizzles[0]((new Vector3(-t_graph.toNumber() + 6, 0, 0) - center) * scale);
 
 var tick = (elapsedTime, multiplier) => {
@@ -376,15 +406,6 @@ var tick = (elapsedTime, multiplier) => {
     state.y = R.toNumber();
     state.z = I.toNumber();
 
-    // if graph gets too tall, reset back to 0
-    if(t_graph > BigNumber.from(32) / (scale * BigNumber.TEN)) {
-        t_graph = BigNumber.ZERO;
-        theory.clearGraph();
-        state.x = t_graph.toNumber();
-        state.y = R.toNumber();
-        state.z = I.toNumber();
-    }
-
     theory.invalidatePrimaryEquation();
     theory.invalidateSecondaryEquation();
     theory.invalidateTertiaryEquation();
@@ -400,7 +421,7 @@ var tick = (elapsedTime, multiplier) => {
 // EQUATIONS
 // -------------------------------------------------------------------------------
 var getPrimaryEquation = () => {
-    theory.primaryEquationHeight = 90;
+    theory.primaryEquationHeight = 80;
     let result = "\\begin{array}{c}\\dot{\\rho} = ";
 
     // let a draw on equation
@@ -437,15 +458,15 @@ var getPrimaryEquation = () => {
     switch(dimension.level) {
         case 0:
             result += "\\sqrt{tq^2}\\\\";
-            result += "G(t) = \\cos(t) + i\\sin(t)";
+            result += "G(t) = r_x + i_y";
             break;
         case 1:
             result += "\\sqrt{\\text{\\,}tq^2 + R^2\\text{ }}\\\\";
-            result += "G(t) = b\\cos(t) + i\\sin(t)";
+            result += "G(t) = r_x + i_y";
             break;
         case 2:
             result += "\\sqrt{\\text{\\,}tq^2 + R^2 + I^2\\text{ }}\\\\";
-            result += "G(t) = b\\cos(t) + ci\\sin(t)";
+            result += "G(t) = r_x + i_y";
             break;
     }
 
@@ -462,15 +483,16 @@ var getSecondaryEquation = () => {
     }
     switch(dimension.level) {
         case 0:
-            result += "\\dot{q} = q_1q_2\\\\";
+            result += "r_x = \\cos(t),\\quad i_y = i\\sin(t)\\\\";
+            result += "\\dot{q} = q_1q_2";
             break;
         case 1:
-            result += "\\dot{R} = |r_x|^2, \\quad\\dot{q} = q_1q_2\\\\";
-            result += "\\dot{r_x} = b_1b_2\\cos(t)\\\\";
+            result += "r_x = b_1b_2\\cos(t),\\quad i_y = i\\sin(t)\\\\";
+            result += "\\dot{q} = q_1q_2, \\quad\\dot{R} = (r_x)^2";
             break;
         case 2:
-            result += "\\dot{R} = |r_x|^2, \\quad\\dot{I} = -(i_y)^{2}, \\quad\\dot{q} = q_1q_2\\\\";
-            result += "\\dot{r_x} = b_1b_2\\cos(t),\\quad\\dot{i_y} = ic_1c_2\\sin(t)\\\\";
+            result += "r_x = b_1b_2\\cos(t),\\quad i_y = ic_1c_2\\sin(t)\\\\";
+            result += "\\dot{q} = q_1q_2, \\quad\\dot{R} = (r_x)^2, \\quad\\dot{I} = -(i_y)^{2}";
             break;
     }
 
@@ -495,7 +517,7 @@ var getQuaternaryEntries = () => {
     quaternaryEntries[0].value = q.toString(2);
     quaternaryEntries[1].value = t.toString(2);
     quaternaryEntries[2].value = R.toString(2);
-    quaternaryEntries[3].value = I.toString(2);
+    quaternaryEntries[3].value = I.toString(2) + "i";
 
     return quaternaryEntries;
 }

@@ -465,11 +465,11 @@ var getSecondaryEquation = () => {
             result += "\\dot{q} = q_1q_2\\\\";
             break;
         case 1:
-            result += "\\dot{R} = |r_x|^2, \\quad\\dot{q} = q_1q_2\\\\";
+            result += "\\dot{R} = (r_x)^2, \\quad\\dot{q} = q_1q_2\\\\";
             result += "\\dot{r_x} = b_1b_2\\cos(t)\\\\";
             break;
         case 2:
-            result += "\\dot{R} = |r_x|^2, \\quad\\dot{I} = -(i_y)^{2}, \\quad\\dot{q} = q_1q_2\\\\";
+            result += "\\dot{R} = (r_x)^2, \\quad\\dot{I} = -(i_y)^{2}, \\quad\\dot{q} = q_1q_2\\\\";
             result += "\\dot{r_x} = b_1b_2\\cos(t),\\quad\\dot{i_y} = ic_1c_2\\sin(t)\\\\";
             break;
     }

@@ -10,7 +10,7 @@ var id = "eulers_formula";
 var name = "Euler's Formula";
 var description = "A theory about Euler's formula.";
 var authors = "peanut & Snaeky";
-var version = "beta-27042022\\_1";
+var version = "beta-28042022\\_1";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -331,11 +331,9 @@ var tick = (elapsedTime, multiplier) => {
 
     let base_currency_multiplier = dt * bonus;
 
-
-
-
     t_graph += dt / (scale * BigNumber.TEN);
 
+    // CURRENCY CALC
     // this check exists to stop rho from growing when every variable is 0
     // q1 = 0 basically means at start of every pub
     if(q1.level == 0) {
@@ -358,16 +356,16 @@ var tick = (elapsedTime, multiplier) => {
         }
         max_currency = max_currency.max(currency.value);
 
-        // R2 calculation
+        // R calculation
         if(dimension.level > 0) {
-            currency_R.value += base_currency_multiplier * (R.abs()).pow(BigNumber.TWO); // abs so currency cannot go negative
-        } else {                                                                         // squared on request of snaeky
+            currency_R.value += base_currency_multiplier * (R.abs()).pow(BigNumber.TWO);
+        } else {
             currency_R.value = 0;
         }
 
-        // I3 calculation
+        // I calculation
         if(dimension.level > 1) {
-            currency_I.value += base_currency_multiplier * (I.abs()).pow(BigNumber.TWO); // -,,-
+            currency_I.value += base_currency_multiplier * (I.abs()).pow(BigNumber.TWO);
         } else {
             currency_I.value = 0;
         }
@@ -390,9 +388,11 @@ var tick = (elapsedTime, multiplier) => {
     theory.invalidatePrimaryEquation();
     theory.invalidateSecondaryEquation();
     theory.invalidateTertiaryEquation();
+    theory.invalidateQuaternaryValues();
 
     // constantly check for scale
     checkForScale();
+
 }
 // -------------------------------------------------------------------------------
 
@@ -400,7 +400,7 @@ var tick = (elapsedTime, multiplier) => {
 // EQUATIONS
 // -------------------------------------------------------------------------------
 var getPrimaryEquation = () => {
-    theory.primaryEquationHeight = 60;
+    theory.primaryEquationHeight = 90;
     let result = "\\begin{array}{c}\\dot{\\rho} = ";
 
     // let a draw on equation
@@ -440,11 +440,11 @@ var getPrimaryEquation = () => {
             result += "G(t) = \\cos(t) + i\\sin(t)";
             break;
         case 1:
-            result += "\\sqrt{tq^2 + |\\,R_2^{2}\\,|\\text{ }}\\\\";
+            result += "\\sqrt{\\text{\\,}tq^2 + R^2\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + i\\sin(t)";
             break;
         case 2:
-            result += "\\sqrt{\\text{\\,}tq^2 + |R_{2}|^{2} + |I_{3}|^{2}\\text{ }}\\\\";
+            result += "\\sqrt{\\text{\\,}tq^2 + R^2 + I^2\\text{ }}\\\\";
             result += "G(t) = b\\cos(t) + ci\\sin(t)";
             break;
     }
@@ -454,7 +454,7 @@ var getPrimaryEquation = () => {
 }
 
 var getSecondaryEquation = () => {
-    theory.secondaryEquationHeight = 70;
+    theory.secondaryEquationHeight = 50;
     let result = "\\begin{array}{c}";
 
     if(nBool) {
@@ -465,68 +465,40 @@ var getSecondaryEquation = () => {
             result += "\\dot{q} = q_1q_2\\\\";
             break;
         case 1:
-            result += "\\dot{q} = q_1q_2,\\;\\dot{R} = b_1b_2\\cos(t)\\\\";
+            result += "\\dot{R} = |r_x|^2, \\quad\\dot{q} = q_1q_2\\\\";
+            result += "\\dot{r_x} = b_1b_2\\cos(t)\\\\";
             break;
         case 2:
-            result += "\\dot{q} = q_1q_2,\\;\\dot{R} = b_1b_2\\cos(t),\\;\\dot{I} = -(ic_1c_2\\sin(t))^2\\\\";
+            result += "\\dot{R} = |r_x|^2, \\quad\\dot{I} = -(i_y)^{2}, \\quad\\dot{q} = q_1q_2\\\\";
+            result += "\\dot{r_x} = b_1b_2\\cos(t),\\quad\\dot{i_y} = ic_1c_2\\sin(t)\\\\";
             break;
     }
 
-    result += theory.latexSymbol + "=\\max\\rho^{0.4}";
     result += "\\end{array}"
 
     return result;
 }
 
 var getTertiaryEquation = () => {
-    let result = "";
-
-    result += "\\begin{matrix}";
-    result += "t = ";
-    result += t;
-    result += ",\\;q = ";
-    result += q.toString();
-    result += "\\;\\text{ | }";
-    result += "\\;R = ";
-    result += BigNumber.from(R).toString(2);
-    result += ",\\;I =";
-    result += BigNumber.from(I).toString(2);
-    result += "\\end{matrix}";
-
+    let result = theory.latexSymbol + "=\\max\\rho^{0.4}";
     return result;
 }
 
-// this is used for debug
-
-/*var getQuaternaryEntries = () => {
-
+var getQuaternaryEntries = () => {
     if (quaternaryEntries.length == 0) {
-        quaternaryEntries.push(new QuaternaryEntry("sc", null));
-        quaternaryEntries.push(new QuaternaryEntry("R^*", null));
-        quaternaryEntries.push(new QuaternaryEntry("I^*", null));
-        quaternaryEntries.push(new QuaternaryEntry("I_s", null));
-        quaternaryEntries.push(new QuaternaryEntry("\\rho^*", null));
+        quaternaryEntries.push(new QuaternaryEntry("q", null));
         quaternaryEntries.push(new QuaternaryEntry("t", null));
-        quaternaryEntries.push(new QuaternaryEntry("g_t", null));
-        quaternaryEntries.push(new QuaternaryEntry("m_t", null));
-        quaternaryEntries.push(new QuaternaryEntry("a", null));
+        quaternaryEntries.push(new QuaternaryEntry("r_x", null));
+        quaternaryEntries.push(new QuaternaryEntry("i_y", null));
     }
 
-    quaternaryEntries[0].value = scale;
-    quaternaryEntries[1].value = max_R;
-    quaternaryEntries[2].value = max_I;
-    quaternaryEntries[3].value = (8 / scale) / 4;
-    quaternaryEntries[4].value = maxCurrency;
-    quaternaryEntries[5].value = value_t;
-    quaternaryEntries[6].value = graph_t;
-    quaternaryEntries[7].value = 32 + ((1 / 100) * (max_R / 1000));
-    quaternaryEntries[8].value = a;
+    quaternaryEntries[0].value = q.toString(2);
+    quaternaryEntries[1].value = t.toString(2);
+    quaternaryEntries[2].value = R.toString(2);
+    quaternaryEntries[3].value = I.toString(2);
 
     return quaternaryEntries;
-}*/
-
-
-
+}
 // -------------------------------------------------------------------------------
 
 var get3DGraphPoint = () => swizzles[0]((state - center) * scale);

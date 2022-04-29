@@ -33,7 +33,7 @@ var description = "You're a student hired by a professor at a famous university.
 var authors = "Snaeky (SnaekySnacks#1161) - Idea, General Structuring\n" +
     "peanut (peanut#6368) - Developer"
 
-var version = "beta-29042022\\_1";
+var version = "RC-29042022\\_1";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -60,7 +60,6 @@ var t_graph = BigNumber.ZERO;   // distance from origin to current x value
 var t_speed;                    // multiplies dt by given value (1 + t_multiplier * dt)
 var t = BigNumber.ZERO;         // time elapsed ( -> cos(t), sin(t) etc.)
 var max_R, max_I;
-var max_currency;
 
 // vector variables
 var state = new Vector3(0, 0, 0);
@@ -84,7 +83,6 @@ var init = () => {
     currency_R = theory.createCurrency("R", "R");
     currency_I = theory.createCurrency("I", "I");
 
-    max_currency = BigNumber.ZERO;
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
 
@@ -94,8 +92,8 @@ var init = () => {
 
     // t
     {
-        let getDesc = (level) => "\\dot{t}=" + 0.2 * getT(level).toString(0);
-        let getInfo = (level) => "\\dot{t}=" + 0.2 * getT(level).toString(0);
+        let getDesc = (level) => "\\dot{t}=" + BigNumber.from(0.2 + (0.2 * t_speed.level)).toString(t_speed.level > 3 ? 0 : 1);
+        let getInfo = (level) => "\\dot{t}=" + BigNumber.from(0.2 + (0.2 * t_speed.level)).toString(t_speed.level > 3 ? 0 : 1);
         t_speed = theory.createUpgrade(0, currency, new ExponentialCost(1e6, Math.log2(1e6)));
         t_speed.getDescription = (_) => Utils.getMath(getDesc(t_speed.level));
         t_speed.getInfo = (amount) => Utils.getMathTo(getInfo(t_speed.level), getInfo(t_speed.level + amount));
@@ -200,7 +198,7 @@ var init = () => {
 
 
     // Milestone Upgrades
-    theory.setMilestoneCost(new CustomCost(total => BigNumber.from(total < 5 ? 4*(1+total) : 24 + 8*(total-4))));
+    theory.setMilestoneCost(new CustomCost(total => BigNumber.from(total < 5 ? 4*(1+total) : 20 + 8*(total-4))));
 
     {
         dimension = theory.createMilestoneUpgrade(0, 2);
@@ -340,7 +338,6 @@ var updateAvailability = () => {
 
 var postPublish = () => {
     scale = 0.2;
-    max_currency = BigNumber.ZERO;
     t_graph = BigNumber.ZERO;
     t = BigNumber.ZERO;
     q = BigNumber.ONE;
@@ -377,8 +374,7 @@ var getEquationOverlay = (_) => {
     return result;
 }
 
-// TODO: release this when new update comes out
-// var get3DGraphTranslation = () => swizzles[0]((new Vector3(-t_graph.toNumber() + 6, 0, 0) - center) * scale);
+var get3DGraphTranslation = () => swizzles[0]((new Vector3(-t_graph.toNumber() + 6, 0, 0) - center) * scale);
 
 var tick = (elapsedTime, multiplier) => {
 
@@ -390,7 +386,6 @@ var tick = (elapsedTime, multiplier) => {
     let vq2 = getQ2(q2.level);
     q += vq1 * vq2.pow(nuclear_bool ? BigNumber.TEN : BigNumber.ONE) * dt * bonus;
 
-    let maxT = BigNumber.ZERO;
     // t calc
     if(q1.level != 0) {
         t += ((1 + t_speed.level) / 5) * dt;
@@ -446,7 +441,6 @@ var tick = (elapsedTime, multiplier) => {
         currency_I.value = 0;
         currency_R.value = 0;
     } else {
-
         // rho calculation
         switch (dimension.level) {
             case 0:
@@ -459,7 +453,6 @@ var tick = (elapsedTime, multiplier) => {
                 currency.value += base_currency_multiplier * a * (t * q.pow(BigNumber.TWO) + (currency_R.value).pow(BigNumber.TWO) + (currency_I.value).pow(BigNumber.TWO)).sqrt();
                 break;
         }
-        max_currency = max_currency.max(currency.value);
 
         // R calculation
         if(dimension.level > 0) {
@@ -481,15 +474,6 @@ var tick = (elapsedTime, multiplier) => {
     state.y = R.toNumber();
     state.z = I.toNumber();
 
-    // if graph gets too tall, reset back to 0
-    if(t_graph > BigNumber.from(32) / (scale * BigNumber.TEN)) {
-        t_graph = BigNumber.ZERO;
-        theory.clearGraph();
-        state.x = t_graph.toNumber();
-        state.y = R.toNumber();
-        state.z = I.toNumber();
-    }
-
     theory.invalidatePrimaryEquation();
     theory.invalidateSecondaryEquation();
     theory.invalidateTertiaryEquation();
@@ -506,12 +490,14 @@ var tick = (elapsedTime, multiplier) => {
 // -------------------------------------------------------------------------------
 var getPrimaryEquation = () => {
     theory.primaryEquationHeight = 80;
+
+    // let everything be centered -> "{c}"
     let result = "\\begin{array}{c}\\dot{\\rho} = ";
 
     // let a draw on equation
-    let a_eq_base = "";
-    let a_eq_term = "";
-    let a_eq_exp = getAExp(a_exp.level).toString(1);
+    let a_eq_term = ""; // whole a term drawn
+    let a_eq_base = ""; // only a base
+    let a_eq_exp = getAExp(a_exp.level).toString(1); // only a exponent
     switch(a_base.level) {
         case 0:
             a_eq_base = "";
@@ -540,7 +526,7 @@ var getPrimaryEquation = () => {
         a_eq_term = "(" + a_eq_base + ")" + "^{" + a_eq_exp + "}";
     }
 
-    result += a_eq_term;
+    result += a_eq_term; // put everything onto equation
 
     switch(dimension.level) {
         case 0:
@@ -625,7 +611,7 @@ var getAExp = (level) => BigNumber.from(1 + 0.1 * level);
 var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 var getB2 = (level) => BigNumber.from(1.1 + (0.01 * b_base.level)).pow(level);
 var getC1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getC2 = (level) => BigNumber.from(1.1 + (0.0125 * c_base.level)).pow(level);q
+var getC2 = (level) => BigNumber.from(1.1 + (0.0125 * c_base.level)).pow(level);
 var getT = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 
 init();

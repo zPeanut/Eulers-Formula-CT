@@ -449,7 +449,7 @@ var postPublish = () => {
     secret_count = 0;
 }
 
-var getInternalState = () => `${num_publish} ${q} ${t} ${scale}`
+var getInternalState = () => `${num_publish} ${q} ${t} ${scale} ${t_graph}`
 
 var setInternalState = (state) => {
     let values = state.split(" ");
@@ -457,6 +457,7 @@ var setInternalState = (state) => {
     if (values.length > 1) q = parseBigNumber(values[1]);
     if (values.length > 2) t = parseBigNumber(values[2]);
     if (values.length > 3) scale = parseInt(values[3]);
+    if (values.length > 4) t_graph = parseBigNumber(values[4]);
     theory.clearGraph();
     state.x = t_graph.toNumber();
     state.y = R.toNumber();
@@ -575,7 +576,7 @@ var tick = (elapsedTime, multiplier) => {
 
     let base_currency_multiplier = dt * bonus;
 
-    t_graph += dt / (scale * BigNumber.TEN);
+    t_graph += BigNumber.from(dt / (scale * BigNumber.TEN));
 
     // CURRENCY CALC
     if(q1.level == 0) {

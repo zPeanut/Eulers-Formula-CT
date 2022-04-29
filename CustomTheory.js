@@ -16,8 +16,8 @@ var description = "You're a student hired by a professor at a famous university.
     "\n" +
     "This theory explores the world of complex numbers, their arrangement and their place in the Universe of Mathematics. The theory, named after famous mathematician Leonhard Euler and first mentioned by Roger Cotes in 1714, explores the relationship between exponential and trigonometric functions.\n" +
     "Your task is to use this formula, and with the help of the Pythagorean theorem, calculate the distances of cos(t) and isin(t) from the origin, and grow them as large as possible using many different methods and approaches!\n" +
-    "A theory, with interesting properties, grow and decay rates, and an (I hope) interesting story!" +
-    "\n" +
+    "A theory, with interesting grow and decay rates, unusual properties and an (I hope) interesting story!" +
+    "\n\n" +
     "Huge thanks to:\n" +
     "\n" +
     "- Gilles-Philippe, for implementing integral features we proposed, helping us a *ton* during development, answering our questions and giving us beta features to use in our theories! \n" +
@@ -720,7 +720,7 @@ var getSecondaryEquation = () => {
 }
 
 var getTertiaryEquation = () => {
-    let result = (q2.level == 19 && q1.level == 19) ? "\\text{do the flashbang dance!}" : secret_count + theory.latexSymbol + "=\\max\\rho^{0.4}";
+    let result = (q2.level == 19 && q1.level == 19) ? "\\text{do the flashbang dance!}" : theory.latexSymbol + "=\\max\\rho^{0.4}";
     return result;
 }
 

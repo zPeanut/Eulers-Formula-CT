@@ -8,17 +8,17 @@ import {ui} from "./api/ui/UI";
 
 var id = "eulers_formula";
 var name = "Euler's Formula";
-var description = "You're a student hired by a professor at a famous university. Since your works have been successful in the past, and have received a lot of attention from your colleagues, you decide to go into a subject not yet covered by your old professor, which has  interested you since day 1 of deciding to study mathematics - Complex Numbers. \n" +
-    "You hope that with your research into this subject, you can finally get your breakthrough you always wanted in the scientific world.\n" +
+var description = "You're a student hired by a professor at a famous university. Since your works have received a bit of attention from your colleagues, you decide to go into a subject not yet covered by your professor, which has interested you since day 1 of deciding to study mathematics - Complex Numbers. \n" +
+    "You hope that with your research into this subject, you can finally get the breakthrough you always wanted in the scientific world.\n" +
     "\n" +
     "This theory explores the world of complex numbers, their arrangement and proves that i is an integral part of mathematics, on which basic math is functioning on. The theory, named after famous mathematician Leonhard Euler and first stated by Roger Cotes in 1714, explores the relationship between exponential functions and trigonometric functions.\n" +
-    "Your task is to use this formula, and with the help of the pythagorean theorem, calculate the distances of cos(t) and isin(t) from the origin, and grow them as large as possible using many different methods and even modifying the formula using multipliers of sine and cosine!\n" +
+    "Your task is to use this formula, and with the help of the Pythagorean theorem, calculate the distances of cos(t) and isin(t) from the origin, and grow them as large as possible using many different methods and even modifying the formula using multipliers of sine and cosine!\n" +
     "\n" +
     "Huge thanks to:\n" +
     "\n" +
     "- Gilles-Philippe, for implementing integral features we proposed, helping us a *ton* during development, answering our questions and giving us beta features to use in our theories! \n" +
     "\n" +
-    "- XLII, for helping us a TON during balancing, deciding various integral features of the theory such as but not limited to: milestone placement, milestone costs, publish multipliers and a lot more!\n" +
+    "- XLII, for helping us a *ton* during balancing, deciding various integral features of the theory such as but not limited to: milestone placement, milestone costs, publish multipliers and a lot more!\n" +
     "\n" +
     "- The entire discord community, who've playtested this theory and reported many bugs, especially those active at #custom-theories-dev\n" +
     "\n" +
@@ -33,7 +33,7 @@ var description = "You're a student hired by a professor at a famous university.
 var authors = "Snaeky (SnaekySnacks#1161) - Idea, General Structuring\n" +
     "peanut (peanut#6368) - Developer"
 
-var version = "beta-28042022\\_3";
+var version = "beta-28042022\\_4";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -45,10 +45,11 @@ var a1, a2, a3;
 var b1, b2;
 var c1, c2;
 var q = BigNumber.ONE;
-var nuclearOption, nBool;
+var nuclear_option, nuclear_bool;
 
 // milestone variables
-var a_base, a_exp, a_term;
+var a_base, a_exp;
+var b_base, c_base;
 var dimension;
 
 // graph variables
@@ -67,11 +68,14 @@ var center = new Vector3(0, 0, 0);
 var swizzles = [(v) => new Vector3(v.y, v.z, v.x), (v) => new Vector3(v.y, v.z, v.x), (v) => new Vector3(v.x, v.y, v.z)];
 
 // story variables
-var chapter1;
+var chapter1, chapter2, chapter3, chapter4, chapter5, chapter6, chapter7, chapter8, chapter9;
 
-// achievment variables
-var achievement1;
+// currency achievements
+var achievement1, achievement2, achievement3, achievement4,  achievement5, achievement6, achievement7, achievement8, achievement9, achievement10;
 
+// publish achievements
+var achievement11, achievement12, achievement13, achievement14,  achievement15, achievement16, achievement17, achievement18, achievement19, achievement20;
+var num_publish = 0;
 
 
 var init = () => {
@@ -127,7 +131,7 @@ var init = () => {
 
     // b2
     {
-        let getDesc = (level) => "b_2=1.1^{" + level + "}";
+        let getDesc = (level) => "b_2=" + (1.1 + (0.01 * b_base.level)) + "^{" + level + "}";
         let getInfo = (level) => "b_2=" + getB2(level).toString(2);
         b2 = theory.createUpgrade(4, currency_R, new ExponentialCost(100, Math.log2(2)));
         b2.getDescription = (_) => Utils.getMath(getDesc(b2.level));
@@ -146,7 +150,7 @@ var init = () => {
 
     // c2
     {
-        let getDesc = (level) => "c_2=1.1^{" + level + "}";
+        let getDesc = (level) => "c_2=" + (1.1 + (0.0125 * b_base.level)) + "^{" + level + "}";
         let getInfo = (level) => "c_2=" + getC2(level).toString(2);
         c2 = theory.createUpgrade(6, currency_I, new ExponentialCost(100, Math.log2(2)));
         c2.getDescription = (_) => Utils.getMath(getDesc(c2.level));
@@ -186,12 +190,12 @@ var init = () => {
     theory.createBuyAllUpgrade(1, currency, 1e13);
     theory.createAutoBuyerUpgrade(2, currency, 1e20);
 
-    // t
+    // let theory explode
     {
-        nuclearOption = theory.createPermanentUpgrade(3, currency, new FreeCost());
-        nuclearOption.getDescription = (_) => "Let theory explode";
-        nuclearOption.getInfo = (amount) => "$q_2\\; \\rightarrow \\;q_2^{10}$";
-        nuclearOption.boughtOrRefunded = (_) => nBool = !nBool;
+        nuclear_option = theory.createPermanentUpgrade(3, currency, new FreeCost());
+        nuclear_option.getDescription = (_) => "Let theory explode";
+        nuclear_option.getInfo = (amount) => "$q_2\\; \\rightarrow \\;q_2^{10}$";
+        nuclear_option.boughtOrRefunded = (_) => nuclear_bool = !nuclear_bool;
     }
 
 
@@ -205,48 +209,108 @@ var init = () => {
         dimension.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); theory.invalidateSecondaryEquation(); theory.invalidateTertiaryEquation(); updateAvailability(); }
         dimension.refunded = (_) => {
             if(dimension.level == 1) {
-                a_term.level = 0;
-                a_exp.level = 0;
                 a_base.level = 0;
+                a_exp.level = 0;
             }
         }
     }
 
     {
-        a_term = theory.createMilestoneUpgrade(1, 1);
-        a_term.getDescription = (_) => Localization.getUpgradeAddTermDesc("a_1");
-        a_term.getInfo = (_) => Localization.getUpgradeAddTermInfo("a_1");
-        a_term.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
+        a_base = theory.createMilestoneUpgrade(1, 3);
+        a_base.getDescription = (_) => Localization.getUpgradeAddTermDesc(a_base.level > 0 ? (a_base.level > 1 ? "a_3" : "a_2") : "a_1");
+        a_base.getInfo = (_) => Localization.getUpgradeAddTermInfo(a_base.level > 0 ? (a_base.level > 1 ? "a_3" : "a_2") : "a_1");
+        a_base.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
     {
         a_exp = theory.createMilestoneUpgrade(2, 5);
-        a_exp.getDescription = (_) => Localization.getUpgradeIncCustomExpDesc("a", "0.1");
-        a_exp.getInfo = (_) => Localization.getUpgradeIncCustomExpInfo("a", "0.1");
+        a_exp.getDescription = (_) => Localization.getUpgradeIncCustomExpDesc(a_base.level > 0 ? (a_base.level > 1 ? (a_base.level > 2 ? "a_1a_2a_3" : "a_1a_2") : "a_1") : "a_1", "0.1");
+        a_exp.getInfo = (_) => Localization.getUpgradeIncCustomExpInfo(a_base.level > 0 ? (a_base.level > 1 ? (a_base.level > 2 ? "a_1a_2a_3" : "a_1a_2") : "a_1") : "a_1", "0.1");
         a_exp.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
     }
 
     {
-        a_base = theory.createMilestoneUpgrade(3, 2);
-        a_base.getDescription = (_) => Localization.getUpgradeAddTermDesc(a_base.level == 0 ? "a_2" : "a_3");
-        a_base.getInfo = (_) => Localization.getUpgradeAddTermInfo(a_base.level == 0 ? "a_2" : "a_3");
-        a_base.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
+        b_base = theory.createMilestoneUpgrade(3, 2);
+        b_base.getDescription = (_) => "$\\uparrow  b_2$ base by 0.01";
+        b_base.getInfo = (_) => "Increases $b_2$ base by 0.01";
+        b_base.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
+        b_base.refunded = (_) => {
+            c_base.level = 0;
+        }
     }
 
-    var achievement_category_1 = theory.createAchievementCategory(0, "Publications");
-    var achievement_category_2 = theory.createAchievementCategory(1, "Currencies");
+    {
+        c_base = theory.createMilestoneUpgrade(4, 2);
+        c_base.getDescription = (_) => "$\\uparrow  c_2$ base by 0.0125";
+        c_base.getInfo = (_) => "Increases $c_2$ base by 0.0125";
+        c_base.boughtOrRefunded = (_) => { theory.invalidatePrimaryEquation(); updateAvailability(); }
+    }
+
+
+
+    // Achievements
+    var achievement_category_1 = theory.createAchievementCategory(0, "Currencies");
+    var achievement_category_2 = theory.createAchievementCategory(1, "Publications");
+
+    achievement1 = theory.createAchievement(0, achievement_category_1, "First Time", "Publish your findings once.", () => num_publish >= 1);
+    achievement2 = theory.createAchievement(1, achievement_category_1, "Not a fad?", "Publish 2 Times.", () => num_publish >= 2);
+    achievement3 = theory.createAchievement(2, achievement_category_1, "I recognize this name!", "Publish 5 Times.", () => num_publish >= 5);
+    achievement4 = theory.createAchievement(3, achievement_category_1, "Famous Publicist", "Publish 10 Times.", () => num_publish >= 10);
+    achievement5 = theory.createAchievement(4, achievement_category_1, "Senior Writer", "Publish 25 Times.", () => num_publish >= 25);
+    achievement6 = theory.createAchievement(5, achievement_category_1, "Lead Author", "Publish 50 Times.", () => num_publish >= 50);
+
+    achievement11 = theory.createAchievement(11, achievement_category_2, "First Time", "Publish your findings once.", () => num_publish >= 1);
+    achievement12 = theory.createAchievement(12, achievement_category_2, "Not a fad?", "Publish 2 Times.", () => num_publish >= 2);
+    achievement13 = theory.createAchievement(13, achievement_category_2, "I recognize this name!", "Publish 5 Times.", () => num_publish >= 5);
+    achievement14 = theory.createAchievement(14, achievement_category_2, "Famous Publicist", "Publish 10 Times.", () => num_publish >= 10);
+    achievement15 = theory.createAchievement(15, achievement_category_2, "Senior Writer", "Publish 20 Times.", () => num_publish >= 20);
+    achievement16 = theory.createAchievement(16, achievement_category_2, "Lead Author", "Publish 30 Times.", () => num_publish >= 30);
+
 
     // Story chapters
 
     let storyChapter1 = "";
-    storyChapter1 += "One of your students comes to you with a problem.\n"
-    storyChapter1 += "They say, \"Professor, all the other experts in our field keep saying that this equation can't be used to further our research, \nbut I think I can get something out of it.\"\n\n"
-    storyChapter1 += "He hands you the paper with e^ix = cos(x) + i * sin(x).\n"
-    storyChapter1 += "You look at him and say,\n";
-    storyChapter1 += "This is Eulers Identity, are you sure you can get work out of something that has imaginary numbers?\"\n";
-    storyChapter1 += "\"Yes! I believe I can!\"\n\n\n";
-    storyChapter1 += "You give them the green light to work on the project.";
-    chapter1 = theory.createStoryChapter(0, "Circular Reasoning", storyChapter1, () => q1.level == 0); //unlock story chapter when a1 is purchased
+    storyChapter1 += "You approach your professor with a problem you found.\n"
+    storyChapter1 += "You say, \"Professor, all the other experts in our field keep saying that this equation can't be used to further our research, but I think I can get something out of it.\"\n"
+    storyChapter1 += "You hand him the paper with the equation:\n";
+    storyChapter1 += "e^ix = cos(x) + i * sin(x).\n\n"
+    storyChapter1 += "He looks at you and says,\n";
+    storyChapter1 += "This is Euler's Formula, are you sure you can get work out of something that has imaginary numbers?\"\n";
+    storyChapter1 += "\"Yes! I believe I can!\", you reply to him with anticipation.\n";
+    storyChapter1 += "He gives you the green light to work on the project.";
+    chapter1 = theory.createStoryChapter(0, "Circular Reasoning", storyChapter1, () => q1.level == 0); // unlocked at beginning of the theory
+
+    let storyChapter2 = "";
+    storyChapter2 += "As you start your research, you realize:\n"
+    storyChapter2 += "This is much harder than you anticipated.\n"
+    storyChapter2 += "You start experimenting with this formula,\n";
+    storyChapter2 += "However, you cannot figure out how to modify it yet.\n";
+    storyChapter2 += "Your motivation, however, is higher than ever though,\n";
+    storyChapter2 += "and you cant wait to progress further with this.";
+    chapter2 = theory.createStoryChapter(1, "Anticipation", storyChapter2, () => currency.value > BigNumber.from(1e7)); // unlocked at rho = 1e7
+
+    let storyChapter3 = "";
+    storyChapter3 += "After several months of working on this as a side project,\n"
+    storyChapter3 += "you finally figure it out:\n\n"
+    storyChapter3 += "You figured out how to modify the equation.\n";
+    storyChapter3 += "You try to modify the cosine value,\n";
+    storyChapter3 += "and give it a new name: R.\n";
+    storyChapter3 += "You start experimenting with R,\n";
+    storyChapter3 += "and try to figure out what happens,\n";
+    storyChapter3 += "when you modify it.";
+    chapter3 = theory.createStoryChapter(2, "A Breakthrough", storyChapter3, () => dimension.level == 1); // unlocked at R dimension milestone
+
+    let storyChapter4 = "";
+    storyChapter4 += "Interesting.";
+    storyChapter4 += "You see that the modification did something to the partical.";
+    storyChapter4 += "It's not affecting Rho, but its doing something.";
+    storyChapter4 += "You decide that doing the same to the complex component is a good idea. ";
+    storyChapter4 += "i is going to be interesting to deal with...";
+    storyChapter4 += "You name it I and continue your calculations.";
+    chapter4 = theory.createStoryChapter(3, "Complex Progress", storyChapter4, () => dimension.level == 2); //unlocked at I dimension milestone
+
+
+
 
     updateAvailability();
 }
@@ -255,18 +319,20 @@ var init = () => {
 // -------------------------------------------------------------------------------
 var updateAvailability = () => {
 
-    a_term.isAvailable = dimension.level > 1;
-    a_exp.isAvailable = a_term.level > 0;
-    a_base.isAvailable = a_term.level > 0;
+    a_base.isAvailable = dimension.level > 1;
+    a_exp.isAvailable = a_base.level > 0;
 
-    a1.isAvailable = a_term.level > 0;
-    a2.isAvailable = a_base.level > 0;
-    a3.isAvailable = a_base.level > 1;
+    a1.isAvailable = a_base.level > 0;
+    a2.isAvailable = a_base.level > 1;
+    a3.isAvailable = a_base.level > 2;
 
     b1.isAvailable = dimension.level > 0;
     b2.isAvailable = dimension.level > 0;
     c1.isAvailable = dimension.level > 1;
     c2.isAvailable = dimension.level > 1;
+
+    b_base.isAvailable = (a_exp.level == 5 && a_base.level == 3);
+    c_base.isAvailable = (a_exp.level == 5 && a_base.level == 3 && b_base.level == 2);
 
     currency_R.isAvailable = dimension.level > 0;
     currency_I.isAvailable = dimension.level > 1;
@@ -278,14 +344,16 @@ var postPublish = () => {
     t_graph = BigNumber.ZERO;
     t = BigNumber.ZERO;
     q = BigNumber.ONE;
+    num_publish++;
 }
 
-var getInternalState = () => `${q} ${t}`
+var getInternalState = () => `${num_publish} ${q} ${t}`
 
 var setInternalState = (state) => {
     let values = state.split(" ");
-    if (values.length > 0) q = parseBigNumber(values[0]);
-    if (values.length > 1) t = parseBigNumber(values[1]);
+    if (values.length > 0) q = parseInt(values[0]);
+    if (values.length > 1) q = parseBigNumber(values[1]);
+    if (values.length > 2) t = parseBigNumber(values[2]);
     theory.clearGraph();
     state.x = t_graph.toNumber();
     state.y = R.toNumber();
@@ -320,7 +388,7 @@ var tick = (elapsedTime, multiplier) => {
     // q calc
     let vq1 = getQ1(q1.level);
     let vq2 = getQ2(q2.level);
-    q += vq1 * vq2.pow(nBool ? BigNumber.TEN : BigNumber.ONE) * dt * bonus;
+    q += vq1 * vq2.pow(nuclear_bool ? BigNumber.TEN : BigNumber.ONE) * dt * bonus;
 
     let maxT = BigNumber.ZERO;
     // t calc
@@ -336,15 +404,19 @@ var tick = (elapsedTime, multiplier) => {
     let va_base = BigNumber.ONE;
     switch (a_base.level) {
         case 0:
-            va_base = va1;
+            va_base = BigNumber.ONE;
             break;
         case 1:
-            va_base = va1 * va2;
+            va_base = va1;
             break;
         case 2:
+            va_base = va1 * va2;
+            break;
+        case 3:
             va_base = va1 * va2 * va3;
+            break;
     }
-    let a = a_term.level == 0 ? BigNumber.ONE : va_base.pow(va_exp);
+    let a = va_base.pow(va_exp);
 
     // b calc
     let vb1 = getB1(b1.level);
@@ -442,26 +514,29 @@ var getPrimaryEquation = () => {
     let a_eq_exp = getAExp(a_exp.level).toString(1);
     switch(a_base.level) {
         case 0:
-            a_eq_base = "a_1";
+            a_eq_base = "";
             break;
         case 1:
-            a_eq_base = "a_1a_2";
+            a_eq_base = "a_1";
             break;
         case 2:
+            a_eq_base = "a_1a_2";
+            break;
+        case 3:
             a_eq_base = "a_1a_2a_3";
             break;
     }
 
     // if a has been unlocked, show a term
-    if(a_term.level > 0) {
+    if(a_base.level > 0) {
         a_eq_term = a_eq_base;
     }
     // if a has an exponent, show exponent only when bigger than lvl 0
     if(a_exp.level > 0) {
         a_eq_term = a_eq_base + "^{\\;" + a_eq_exp + "}\\,";
     }
-    // show brackets when exponent is shown and a term is bigger than lvl 0
-    if(a_exp.level > 0 && a_base.level > 0) {
+    // show brackets when exponent is shown and a base is bigger than lvl 1
+    if(a_exp.level > 0 && a_base.level > 1) {
         a_eq_term = "(" + a_eq_base + ")" + "^{" + a_eq_exp + "}";
     }
 
@@ -490,7 +565,7 @@ var getSecondaryEquation = () => {
     theory.secondaryEquationHeight = 50;
     let result = "\\begin{array}{c}";
 
-    if(nBool) {
+    if(nuclear_bool) {
         result += "\\text{Nuclear option activated}\\\\"
     }
     switch(dimension.level) {
@@ -548,9 +623,9 @@ var getA2 = (level) => Utils.getStepwisePowerSum(level, 40, 10, 1);
 var getA3 = (level) => BigNumber.TWO.pow(level);
 var getAExp = (level) => BigNumber.from(1 + 0.1 * level);
 var getB1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getB2 = (level) => BigNumber.from(1.1).pow(level);
+var getB2 = (level) => BigNumber.from(1.1 + (0.01 * b_base.level)).pow(level);
 var getC1 = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
-var getC2 = (level) => BigNumber.from(1.1).pow(level);
+var getC2 = (level) => BigNumber.from(1.1 + (0.0125 * c_base.level)).pow(level);q
 var getT = (level) => Utils.getStepwisePowerSum(level, 2, 10, 1);
 
 init();

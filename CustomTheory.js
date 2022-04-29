@@ -456,7 +456,7 @@ var setInternalState = (state) => {
     if (values.length > 0) num_publish = parseInt(values[0]);
     if (values.length > 1) q = parseBigNumber(values[1]);
     if (values.length > 2) t = parseBigNumber(values[2]);
-    if (values.length > 3) scale = parseBigNumber(values[3]);
+    if (values.length > 3) scale = parseInt(values[3]);
     theory.clearGraph();
     state.x = t_graph.toNumber();
     state.y = R.toNumber();

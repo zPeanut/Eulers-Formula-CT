@@ -38,7 +38,7 @@ var authors = "Snaeky (SnaekySnacks#1161) - Balancing, Structuring, Story\n" +
     "XLII (XLII#0042) - Balancing, Structuring\n" +
     "peanut (peanut#6368) - Developer, Story";
 
-var version = "RC-29042022\\_1";
+var version = "RC-29042022\\_2";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -576,7 +576,7 @@ var tick = (elapsedTime, multiplier) => {
 
     let base_currency_multiplier = dt * bonus;
 
-    t_graph += BigNumber.from(dt / (scale * BigNumber.TEN));
+    t_graph += dt / (scale * BigNumber.TEN);
 
     // CURRENCY CALC
     if(q1.level == 0) {

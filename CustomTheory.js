@@ -33,7 +33,7 @@ var description = "You're a student hired by a professor at a famous university.
 var authors = "Snaeky (SnaekySnacks#1161) - Idea, General Structuring\n" +
     "peanut (peanut#6368) - Developer"
 
-var version = "beta-28042022\\_4";
+var version = "beta-29042022\\_1";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -361,14 +361,14 @@ var setInternalState = (state) => {
 }
 
 var checkForScale = () => {
-    if(max_R > 1.3 / scale || max_I > 1.3 / scale) { // scale down everytime R or I gets larger than the screen
+    if(max_R > 1.5 / scale || max_I > 1.5 / scale) { // scale down everytime R or I gets larger than the screen
         t_graph = BigNumber.ZERO;
         theory.clearGraph();
         state.x = t_graph.toNumber();
         state.y = R.toNumber();
         state.z = I.toNumber();
         let old_scale = scale; // save previous scale
-        scale = (60 / 100) * old_scale // scale down by 50%
+        scale = (50 / 100) * old_scale // scale down by 50%
     }
 }
 

@@ -465,6 +465,7 @@ var setInternalState = (state) => {
 var checkForScale = () => {
     if(max_R > 1.5 / scale || max_I > 1.5 / scale) { // scale down everytime R or I gets larger than the screen
         theory.clearGraph();
+        t_graph = BigNumber.ZERO;
         state.x = t_graph.toNumber();
         state.y = R.toNumber();
         state.z = I.toNumber();

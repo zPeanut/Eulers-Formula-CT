@@ -614,7 +614,7 @@ var tick = (elapsedTime, multiplier) => {
     }
 
     // graph drawn
-    state.x = t_graph.toNumber();
+    state.x = t_graph;
     state.y = R.toNumber();
     state.z = I.toNumber();
 

@@ -1,4 +1,4 @@
-﻿import {CustomCost, ExponentialCost} from "./api/Costs";
+import {CustomCost, ExponentialCost} from "./api/Costs";
 import { Localization } from "./api/Localization";
 import {BigNumber, parseBigNumber} from "./api/BigNumber";
 import {QuaternaryEntry, theory} from "./api/Theory";
@@ -38,7 +38,7 @@ var authors = "Snaeky (SnaekySnacks#1161) - Balancing, Structuring, Story\n" +
     "XLII (XLII#0042) - Balancing, Structuring\n" +
     "peanut (peanut#6368) - Developer, Story";
 
-var version = "RC-30042022\\_1";
+var version = "RC-29042022\\_1";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -93,7 +93,6 @@ var init = () => {
 
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
-    t_graph = BigNumber.ZERO;
 
     quaternaryEntries = [];
 
@@ -450,15 +449,14 @@ var postPublish = () => {
     secret_count = 0;
 }
 
-var getInternalState = () => `${num_publish} ${q} ${t} ${scale} ${t_graph}`
+var getInternalState = () => `${num_publish} ${q} ${t} ${scale}`
 
 var setInternalState = (state) => {
     let values = state.split(" ");
     if (values.length > 0) num_publish = parseInt(values[0]);
     if (values.length > 1) q = parseBigNumber(values[1]);
     if (values.length > 2) t = parseBigNumber(values[2]);
-    if (values.length > 3) scale = parseInt(values[3]);
-    if (values.length > 4) t_graph = parseBigNumber(values[4]);
+    if (values.length > 3) scale = parseBigNumber(values[3]);
     theory.clearGraph();
     state.x = t_graph.toNumber();
     state.y = R.toNumber();

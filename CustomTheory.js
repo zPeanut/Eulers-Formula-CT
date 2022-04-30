@@ -577,7 +577,7 @@ var tick = (elapsedTime, multiplier) => {
 
         // I calculation
         currency_I.value += dimension.level > 1 ? base_currency_multiplier * I.square() : BigNumber.ZERO;
- m,nklo0pß
+
     }
 
     theory.invalidatePrimaryEquation();

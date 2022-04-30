@@ -93,7 +93,7 @@ var init = () => {
 
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
-    t = BigNumber.ZERO;
+    t_graph = BigNumber.ZERO;
 
     quaternaryEntries = [];
 
@@ -614,7 +614,7 @@ var tick = (elapsedTime, multiplier) => {
     }
 
     // graph drawn
-    state.x = t_graph;
+    state.x = t_graph.toNumber();
     state.y = R.toNumber();
     state.z = I.toNumber();
 

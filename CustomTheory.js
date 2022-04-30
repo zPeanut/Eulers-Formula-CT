@@ -38,7 +38,7 @@ var authors = "Snaeky (SnaekySnacks#1161) - Balancing, Structuring, Story\n" +
     "XLII (XLII#0042) - Balancing, Structuring\n" +
     "peanut (peanut#6368) - Developer, Story";
 
-var version = "RC-29042022\\_1";
+var version = "RC-30042022\\_2";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -64,9 +64,9 @@ var dimension;
 var scale;
 var R = BigNumber.ZERO;
 var I = BigNumber.ZERO;
-var t_graph = BigNumber.ZERO;   // distance from origin to current x value
-var t_speed;                    // multiplies dt by given value (1 + t_multiplier * dt)
-var t = BigNumber.ZERO;         // time elapsed ( -> cos(t), sin(t) etc.)
+var t_speed;                     // multiplies dt by given value (1 + t_multiplier * dt)
+var t = BigNumber.ZERO;          // time elapsed ( -> cos(t), sin(t) etc.)
+var t_graph = BigNumber.ZERO; // distance from current x value to origin
 var max_R, max_I;
 
 // vector variables
@@ -86,13 +86,13 @@ var num_publish = 0;
 
 
 var init = () => {
-    scale = 0.2;
     currency = theory.createCurrency();
     currency_R = theory.createCurrency("R", "R");
     currency_I = theory.createCurrency("I", "I");
 
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
+    scale = 0.2;
 
     quaternaryEntries = [];
 
@@ -190,12 +190,10 @@ var init = () => {
         a3.getInfo = (amount) => Utils.getMathTo(getInfo(a3.level), getInfo(a3.level + amount));
     }
 
-
     // Permanent Upgrades
     theory.createPublicationUpgrade(0, currency, 1e10);
     theory.createBuyAllUpgrade(1, currency, 1e13);
     theory.createAutoBuyerUpgrade(2, currency, 1e20);
-
 
     // Milestone Upgrades
     theory.setMilestoneCost(new CustomCost(total => BigNumber.from(getCustomCost(total))));
@@ -442,21 +440,23 @@ var updateAvailability = () => {
 
 var postPublish = () => {
     scale = 0.2;
-    t_graph = BigNumber.ZERO;
     t = BigNumber.ZERO;
     q = BigNumber.ONE;
+    t_graph = BigNumber.ZERO;
     num_publish++;
     secret_count = 0;
 }
 
-var getInternalState = () => `${num_publish} ${q} ${t}`
+var getInternalState = () => `${num_publish} ${q} ${t} ${scale}`
 
 var setInternalState = (state) => {
     let values = state.split(" ");
-    if (values.length > 0) q = parseInt(values[0]);
+    if (values.length > 0) num_publish = parseInt(values[0]);
     if (values.length > 1) q = parseBigNumber(values[1]);
     if (values.length > 2) t = parseBigNumber(values[2]);
+    if (values.length > 3) scale = parseFloat(values[3]);
     theory.clearGraph();
+    t_graph = BigNumber.ZERO;
     state.x = t_graph.toNumber();
     state.y = R.toNumber();
     state.z = I.toNumber();
@@ -464,7 +464,6 @@ var setInternalState = (state) => {
 
 var checkForScale = () => {
     if(max_R > 1.5 / scale || max_I > 1.5 / scale) { // scale down everytime R or I gets larger than the screen
-        t_graph = BigNumber.ZERO;
         theory.clearGraph();
         state.x = t_graph.toNumber();
         state.y = R.toNumber();
@@ -520,6 +519,7 @@ var endPopup = ui.createPopup({
 
 var get3DGraphTranslation = () => swizzles[0]((new Vector3(-t_graph.toNumber() + 6, 0, 0) - center) * scale);
 
+
 var tick = (elapsedTime, multiplier) => {
     let dt = BigNumber.from(elapsedTime * multiplier);
     let bonus = theory.publicationMultiplier;
@@ -572,9 +572,15 @@ var tick = (elapsedTime, multiplier) => {
     max_R = max_R.max(R);
     max_I = max_I.max(I);
 
-    let base_currency_multiplier = dt * bonus;
+    // graph_dist calc (explanation see top)
+    t_graph += q1.level == 0 ? 0 : dt / (BigNumber.from(scale) * BigNumber.TEN);
 
-    t_graph += dt / (scale * BigNumber.TEN);
+    // graph drawn
+    state.x = t_graph.toNumber();
+    state.y = R.toNumber();
+    state.z = I.toNumber();
+
+    let base_currency_multiplier = dt * bonus;
 
     // CURRENCY CALC
     if(q1.level == 0) {
@@ -610,10 +616,6 @@ var tick = (elapsedTime, multiplier) => {
         }
     }
 
-    // graph drawn
-    state.x = t_graph.toNumber();
-    state.y = R.toNumber();
-    state.z = I.toNumber();
 
     theory.invalidatePrimaryEquation();
     theory.invalidateSecondaryEquation();

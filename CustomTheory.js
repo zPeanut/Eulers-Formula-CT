@@ -269,7 +269,7 @@ var init = () => {
     theory.createAchievement(20, achievement_category_3, "Lead Author", "Publish your research 50 times.", () => num_publications >= 50);
 
     theory.createSecretAchievement(21,"It's Bright!", 'Let q1 and q2 both have 19 levels.\nDo the Flashbang dance!\n\n', "19 is my favourite number.", () => (q1.level == 19 && q2.level == 19));
-    s_achievement = theory.createSecretAchievement(22,"Competition", 'Tap the equation 100 times.', "Early base-game t acceleration.", () => (t_speed.level == 4 && q1.level == 2 && q2.level == 0));
+    s_achievement = theory.createSecretAchievement(22,"Competition", 'Let t have 4, q1 have 2 and q2 have 0 levels.', "Smoke what everyday?", () => (t_speed.level == 4 && q1.level == 2 && q2.level == 0));
 
     // Story chapters
     let storyChapter1 = "";

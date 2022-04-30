@@ -273,117 +273,117 @@ var init = () => {
     s_achievement_1 = theory.createSecretAchievement(21,"It's Bright!", 'Let q1 and q2 both have 19 levels while having above 1.4e7ρ.\nDo the Flashbang dance!\n\n', "19 is my favourite number.", () => (q1.level == 19 && q2.level == 19));
     s_achievement_2 = theory.createSecretAchievement(22,"Competition", 'Let t have 4, q1 have 2 and q2 have 0 levels.', "Smoke what everyday?", () => (t_speed.level == 4 && q1.level == 2 && q2.level == 0));
 
-    // Story chapters
-    let storyChapter1 = "";
-    storyChapter1 += "You approach your professor with a problem you found.\n"
-    storyChapter1 += "You say: \"Professor, all other experts in our field keep saying that this cannot be used to further our research.\n"
-    storyChapter1 += "However, I think I can get something out of it!\"\n"
-    storyChapter1 += "You hand him the paper with the theory:\n";
-    storyChapter1 += "e^ix = cos(x) + i * sin(x).\n\n"
-    storyChapter1 += "He looks at you and says:\n";
-    storyChapter1 += "\"This is Euler's Formula. Are you sure you can get results out of something that has imaginary numbers?\"\n";
-    storyChapter1 += "\"Yes! I believe I can!\", you reply to him with anticipation.\n";
-    storyChapter1 += "He gives you the green light to work on the project.";
-    theory.createStoryChapter(0, "Circular Reasoning", storyChapter1, () => q1.level == 0); // unlocked at beginning of the theory
+    // Story Chapters
+    let story_chapter_1 = "";
+    story_chapter_1 += "You approach your professor with a problem you found.\n"
+    story_chapter_1 += "You say: \"Professor, all other experts in our field keep saying that this cannot be used to further our research.\n"
+    story_chapter_1 += "However, I think I can get something out of it!\"\n"
+    story_chapter_1 += "You hand him the paper with the theory:\n";
+    story_chapter_1 += "e^ix = cos(x) + i * sin(x).\n\n"
+    story_chapter_1 += "He looks at you and says:\n";
+    story_chapter_1 += "\"This is Euler's Formula. Are you sure you can get results out of something that has imaginary numbers?\"\n";
+    story_chapter_1 += "\"Yes! I believe I can!\", you reply to him with anticipation.\n";
+    story_chapter_1 += "He gives you the green light to work on the project.";
+    theory.createStoryChapter(0, "Circular Reasoning", story_chapter_1, () => q1.level == 0); // unlocked at beginning of the theory
 
-    let storyChapter2 = "";
-    storyChapter2 += "As you start your research, you realize that\n"
-    storyChapter2 += "it is much harder than you anticipated.\n"
-    storyChapter2 += "You start experimenting with this formula.\n";
-    storyChapter2 += "However, you cannot figure out how to integrate the graph into your equation yet.\n";
-    storyChapter2 += "Your motivation is higher than ever though,\n";
-    storyChapter2 += "and you can't wait to progress further with this.";
-    theory.createStoryChapter(1, "Anticipation", storyChapter2, () => currency.value > BigNumber.from(1e7)); // unlocked at rho = 1e7
+    let story_chapter_2 = "";
+    story_chapter_2 += "As you start your research, you realize that\n"
+    story_chapter_2 += "it is much harder than you anticipated.\n"
+    story_chapter_2 += "You start experimenting with this formula.\n";
+    story_chapter_2 += "However, you cannot figure out how to integrate the graph into your equation yet.\n";
+    story_chapter_2 += "Your motivation is higher than ever though,\n";
+    story_chapter_2 += "and you can't wait to progress further with this.";
+    theory.createStoryChapter(1, "Anticipation", story_chapter_2, () => currency.value > BigNumber.from(1e7)); // unlocked at rho = 1e7
 
-    let storyChapter3 = "";
-    storyChapter3 += "After several months of work on this as a side project,\n"
-    storyChapter3 += "you finally figure it out:\n"
-    storyChapter3 += "You know how to modify the equation.\n";
-    storyChapter3 += "You try to modify the cosine value\n";
-    storyChapter3 += "and give it a new name: 'R'.\n";
-    storyChapter3 += "You start experimenting with 'R'\n";
-    storyChapter3 += "and try to figure out what happens\n";
-    storyChapter3 += "when you modify it.";
-    theory.createStoryChapter(2, "A Breakthrough", storyChapter3, () => dimension.level == 1); // unlocked at R dimension milestone
+    let story_chapter_3 = "";
+    story_chapter_3 += "After several months of work on this as a side project,\n"
+    story_chapter_3 += "you finally figure it out:\n"
+    story_chapter_3 += "You know how to modify the equation.\n";
+    story_chapter_3 += "You try to modify the cosine value\n";
+    story_chapter_3 += "and give it a new name: 'R'.\n";
+    story_chapter_3 += "You start experimenting with 'R'\n";
+    story_chapter_3 += "and try to figure out what happens\n";
+    story_chapter_3 += "when you modify it.";
+    theory.createStoryChapter(2, "A Breakthrough", story_chapter_3, () => dimension.level == 1); // unlocked at R dimension milestone
 
-    let storyChapter4 = "";
-    storyChapter4 += "Interesting.\n";
-    storyChapter4 += "You see that the modification did something to the partical.\n";
-    storyChapter4 += "It's not affecting ρ but its doing something.\n";
-    storyChapter4 += "You decide that doing the same to the complex component is a good idea.\n";
-    storyChapter4 += "'i' is going to be interesting to deal with...\n";
-    storyChapter4 += "You name it 'I' and continue your calculations.";
-    theory.createStoryChapter(3, "Complex Progress", storyChapter4, () => dimension.level == 2); // unlocked at I dimension milestone
+    let story_chapter_4 = "";
+    story_chapter_4 += "Interesting.\n";
+    story_chapter_4 += "You see that the modification did something to the partical.\n";
+    story_chapter_4 += "It's not affecting ρ but its doing something.\n";
+    story_chapter_4 += "You decide that doing the same to the complex component is a good idea.\n";
+    story_chapter_4 += "'i' is going to be interesting to deal with...\n";
+    story_chapter_4 += "You name it 'I' and continue your calculations.";
+    theory.createStoryChapter(3, "Complex Progress", story_chapter_4, () => dimension.level == 2); // unlocked at I dimension milestone
 
-    let storyChapter5 = "";
-    storyChapter5 += "Several weeks have passed since you have added 'I' as a component to your research.\n"
-    storyChapter5 += "However, you observe the growth slow down considerably and worry that your research is all for nothing.\n";
-    storyChapter5 += "You ask your colleagues what you should do.\n"
-    storyChapter5 += "One of them says: \"Add a variable to multiply the theory with.\n"
-    storyChapter5 += "Maybe that will help with your progress.\"\n"
-    storyChapter5 += "You create a small little variable called: 'a1'."
-    theory.createStoryChapter(4, "A Different Approach", storyChapter5, () => a_base.level == 1); // unlocked at a_base first milestone
+    let story_chapter_5 = "";
+    story_chapter_5 += "Several weeks have passed since you have added 'I' as a component to your research.\n"
+    story_chapter_5 += "However, you observe the growth slow down considerably and worry that your research is all for nothing.\n";
+    story_chapter_5 += "You ask your colleagues what you should do.\n"
+    story_chapter_5 += "One of them says: \"Add a variable to multiply the theory with.\n"
+    story_chapter_5 += "Maybe that will help with your progress.\"\n"
+    story_chapter_5 += "You create a small little variable called: 'a1'."
+    theory.createStoryChapter(4, "A Different Approach", story_chapter_5, () => a_base.level == 1); // unlocked at a_base first milestone
 
-    let storyChapter6 = "";
-    storyChapter6 += "\"Of course!\n";
-    storyChapter6 += "It's a relationship between exponential functions and trigonometry!\n";
-    storyChapter6 += "Why shouldn't I add an exponent?\n";
-    storyChapter6 += "Surely, using this, this theory can be pushed to its limit!\",\n";
-    storyChapter6 += "you think to yourself.\n";
-    storyChapter6 += "You decide to add an exponent to your multipliers.";
-    theory.createStoryChapter(5, "Exponential Ideas", storyChapter6, () => a_exp.level == 1); // unlocked at a_exponent first milestone
+    let story_chapter_6 = "";
+    story_chapter_6 += "\"Of course!\n";
+    story_chapter_6 += "It's a relationship between exponential functions and trigonometry!\n";
+    story_chapter_6 += "Why shouldn't I add an exponent?\n";
+    story_chapter_6 += "Surely, using this, this theory can be pushed to its limit!\",\n";
+    story_chapter_6 += "you think to yourself.\n";
+    story_chapter_6 += "You decide to add an exponent to your multipliers.";
+    theory.createStoryChapter(5, "Exponential Ideas", story_chapter_6, () => a_exp.level == 1); // unlocked at a_exponent first milestone
 
-    let storyChapter7 = "";
-    storyChapter7 += "Summer break has finally arrived.\n";
-    storyChapter7 += "Maybe it's time for you to quit.\n";
-    storyChapter7 += "You have pushed this theory to its limit, you think to yourself\n";
-    storyChapter7 += "that there's nothing more you can do.\n";
-    storyChapter7 += "You have tried everything you can think of.\n";
-    storyChapter7 += "It's time to let go.\n\n\n\n";
-    storyChapter7 += "Or is it...?"
-    theory.createStoryChapter(6, "The End?", storyChapter7, () => (a_base.level == 3 && a_exp.level == 5)); // unlocked at a_exp and a_base max milestone
+    let story_chapter_7 = "";
+    story_chapter_7 += "Summer break has finally arrived.\n";
+    story_chapter_7 += "Maybe it's time for you to quit.\n";
+    story_chapter_7 += "You have pushed this theory to its limit, you think to yourself\n";
+    story_chapter_7 += "that there's nothing more you can do.\n";
+    story_chapter_7 += "You have tried everything you can think of.\n";
+    story_chapter_7 += "It's time to let go.\n\n\n\n";
+    story_chapter_7 += "Or is it...?"
+    theory.createStoryChapter(6, "The End?", story_chapter_7, () => (a_base.level == 3 && a_exp.level == 5)); // unlocked at a_exp and a_base max milestone
 
-    let storyChapter8 = "";
-    storyChapter8 += "Your summer break was beautiful.\n"
-    storyChapter8 += "You had a great time with your friends.\n"
-    storyChapter8 += "However, that constant thought of the theory can't get out of your head.\n"
-    storyChapter8 += "Since the start of summer break, it has plagued you.\n";
-    storyChapter8 += "\"This cannot be the end.\", you think.\n";
-    storyChapter8 += "\"There has to be something more! No way its limit is so low!\"\n\n";
-    storyChapter8 += "You look over the theory again and notice something.\n"
-    storyChapter8 += "After all this work, how come you never changed the bases of 'b' and 'c'?\n";
-    storyChapter8 += "You gain motivation and start work on the theory again."
-    theory.createStoryChapter(7, "A New Beginning", storyChapter8, () => b_base.level > 0); // unlocked at tau = e100 (b2 first milestone)
+    let story_chapter_8 = "";
+    story_chapter_8 += "Your summer break was beautiful.\n"
+    story_chapter_8 += "You had a great time with your friends.\n"
+    story_chapter_8 += "However, that constant thought of the theory can't get out of your head.\n"
+    story_chapter_8 += "Since the start of summer break, it has plagued you.\n";
+    story_chapter_8 += "\"This cannot be the end.\", you think.\n";
+    story_chapter_8 += "\"There has to be something more! No way its limit is so low!\"\n\n";
+    story_chapter_8 += "You look over the theory again and notice something.\n"
+    story_chapter_8 += "After all this work, how come you never changed the bases of 'b' and 'c'?\n";
+    story_chapter_8 += "You gain motivation and start work on the theory again."
+    theory.createStoryChapter(7, "A New Beginning", story_chapter_8, () => b_base.level > 0); // unlocked at tau = e100 (b2 first milestone)
 
-    let storyChapter9 = "";
-    storyChapter9 += "You wake up in a sudden panic.\n"
-    storyChapter9 += "You had a nightmare, of a huge 'i' falling on you.\n";
-    storyChapter9 += "Another night in your lab.\n";
-    storyChapter9 += "This has been the 3rd time this week.\n"
-    storyChapter9 += "Your theory is growing incredibly slow.\n";
-    storyChapter9 += "You cannot figure out why.\n";
-    storyChapter9 += "The past weeks have been filled of you\n"
-    storyChapter9 += "trying to grow this theory as large as you possibly can.\n\n"
-    storyChapter9 += "More or less successful.\n\n"
-    storyChapter9 += "Suddenly, you realize that you forgot to change the base of 'c'.\n"
-    storyChapter9 += "You think, about how 'a3' is connected to 'c'.\n"
-    storyChapter9 += "Can this be the step to push the theory to its limit?"
-    theory.createStoryChapter(8, "Frustration", storyChapter9, () => c_base.level > 0); // unlocked at tau = e120 (c2 first milestone)
+    let story_chapter_9 = "";
+    story_chapter_9 += "You wake up in a sudden panic.\n"
+    story_chapter_9 += "You had a nightmare, of a huge 'i' falling on you.\n";
+    story_chapter_9 += "Another night in your lab.\n";
+    story_chapter_9 += "This has been the 3rd time this week.\n"
+    story_chapter_9 += "Your theory is growing incredibly slow.\n";
+    story_chapter_9 += "You cannot figure out why.\n";
+    story_chapter_9 += "The past weeks have been filled of you\n"
+    story_chapter_9 += "trying to grow this theory as large as you possibly can.\n\n"
+    story_chapter_9 += "More or less successful.\n\n"
+    story_chapter_9 += "Suddenly, you realize that you forgot to change the base of 'c'.\n"
+    story_chapter_9 += "You think, about how 'a3' is connected to 'c'.\n"
+    story_chapter_9 += "Can this be the step to push the theory to its limit?"
+    theory.createStoryChapter(8, "Frustration", story_chapter_9, () => c_base.level > 0); // unlocked at tau = e120 (c2 first milestone)
 
-    let storyChapter10 = "";
-    storyChapter10 += "You finally did it.\n"
-    storyChapter10 += "You have proven that the theory is able to be pushed to its limit.\n"
-    storyChapter10 += "You are proud of yourself.\n"
-    storyChapter10 += "Your publications get a massive amount of attention.\n"
-    storyChapter10 += "One day, your professor reaches out to you:\n"
-    storyChapter10 += "\"You have shown a lot of dedication,\n"
-    storyChapter10 += "far more than I have ever seen from any student I've ever lectured.\n";
-    storyChapter10 += "I am retiring this semester. The same as you graduate in.\n";
-    storyChapter10 += "I got a small job offering for you.\n";
-    storyChapter10 += "Are you willing to continue in my position?\"\n";
-    storyChapter10 += "You excitingly accept his offer and cannot wait to pursue a career as a professor.\n\n\n"
-    storyChapter10 += "The End."
-    theory.createStoryChapter(9, "The True Ending", storyChapter10, () => predicateAndCallbackPopup()); // unlocked at tau = e150 (finished)
+    let story_chapter_10 = "";
+    story_chapter_10 += "You finally did it.\n"
+    story_chapter_10 += "You have proven that the theory is able to be pushed to its limit.\n"
+    story_chapter_10 += "You are proud of yourself.\n"
+    story_chapter_10 += "Your publications get a massive amount of attention.\n"
+    story_chapter_10 += "One day, your professor reaches out to you:\n"
+    story_chapter_10 += "\"You have shown a lot of dedication,\n"
+    story_chapter_10 += "far more than I have ever seen from any student I've ever lectured.\n";
+    story_chapter_10 += "I am retiring this semester. The same as you graduate in.\n";
+    story_chapter_10 += "I got a small job offering for you.\n";
+    story_chapter_10 += "Are you willing to continue in my position?\"\n";
+    story_chapter_10 += "You excitingly accept his offer and cannot wait to pursue a career as a professor.\n\n\n"
+    story_chapter_10 += "The End."
+    theory.createStoryChapter(9, "The True Ending", story_chapter_10, () => predicateAndCallbackPopup()); // unlocked at tau = e150 (finished)
 
     updateAvailability();
 }
@@ -393,10 +393,9 @@ var init = () => {
 
 // written by gilles
 let e150 = BigNumber.from(1e150);
-
 var predicateAndCallbackPopup = () => {
     if (theory.tau >= e150) {
-        endPopup.show();
+        getEndPopup.show();
         return true;
     }
     return false;
@@ -470,7 +469,7 @@ var checkForScale = () => {
     }
 }
 
-var endPopup = ui.createPopup({
+var getEndPopup = ui.createPopup({
     title: "The End",
     content: ui.createStackLayout({
         children: [
@@ -489,7 +488,7 @@ var endPopup = ui.createPopup({
                 fontSize: 18,
                 padding: Thickness(0, 18, 0, 18),
             }),
-            ui.createButton({text: "Close", onClicked: () => endPopup.hide()})
+            ui.createButton({text: "Close", onClicked: () => getEndPopup.hide()})
         ]
     })
 });
@@ -498,15 +497,13 @@ var tick = (elapsedTime, multiplier) => {
     let dt = BigNumber.from(elapsedTime * multiplier);
     let bonus = theory.publicationMultiplier;
 
+    // t calc
+    t += q1.level == 0 ? 0 : ((1 + t_speed.level) / 5) * dt;
+
     // q calc
     let vq1 = getQ1(q1.level);
     let vq2 = getQ2(q2.level);
     q += vq1 * vq2 * dt * bonus;
-
-    // t calc
-    if(q1.level != 0) {
-        t += ((1 + t_speed.level) / 5) * dt;
-    }
 
     // a calc
     let va1 = getA1(a1.level);
@@ -576,18 +573,11 @@ var tick = (elapsedTime, multiplier) => {
         }
 
         // R calculation
-        if(dimension.level > 0) {
-            currency_R.value += base_currency_multiplier * R.square();
-        } else {
-            currency_R.value = BigNumber.ZERO;
-        }
+        currency_R.value += dimension.level > 0 ? base_currency_multiplier * R.square() : BigNumber.ZERO;
 
         // I calculation
-        if(dimension.level > 1) {
-            currency_I.value += base_currency_multiplier * I.square();
-        } else {
-            currency_I.value = BigNumber.ZERO;
-        }
+        currency_I.value += dimension.level > 1 ? base_currency_multiplier * I.square() : BigNumber.ZERO;
+ m,nklo0pß
     }
 
     theory.invalidatePrimaryEquation();
@@ -597,7 +587,6 @@ var tick = (elapsedTime, multiplier) => {
 
     // constantly check for scale
     checkForScale();
-
 }
 // -------------------------------------------------------------------------------
 
@@ -665,11 +654,11 @@ var getPrimaryEquation = () => {
 }
 
 var getSecondaryEquation = () => {
-    let s_condition = t_speed.level == 4 && q1.level == 2 && q2.level == 0;
-    theory.secondaryEquationHeight = (s_condition && s_boolean_2) ? 70 : 50;
+    let s_condition = t_speed.level == 4 && q1.level == 2 && q2.level == 0 && s_boolean_2;
+    theory.secondaryEquationHeight = s_condition ? 70 : 50;
     let result = "\\begin{array}{c}";
 
-    if(s_condition && s_boolean_2) {
+    if(s_condition) {
         result += "\\text{EF >>>>> CSR2}\\\\";
         result += "\\text{WHO NEEDS ROOTS}\\\\"
         result += "\\text{WHEN YOU HAVE}\\\\"
@@ -692,13 +681,13 @@ var getSecondaryEquation = () => {
     }
 
     result += "\\end{array}"
-
     return result;
 }
 
 var getTertiaryEquation = () => {
-    let s = BigNumber.from(14102005);
-    let result = (q2.level == 19 && q1.level == 19 && currency.value > s && s_boolean_1) ? "\\text{do the Flashbang dance!}" : s_boolean_2 + theory.latexSymbol + "=\\max\\rho^{0.4}";
+    let s_value = BigNumber.from(14102005);
+    let s_condition = q2.level == 19 && q1.level == 19 && currency.value > s_value;
+    let result = s_condition ? "\\text{do the Flashbang dance!}" : theory.latexSymbol + "=\\max\\rho^{0.4}";
     return result;
 }
 
@@ -718,6 +707,7 @@ var getQuaternaryEntries = () => {
     return quaternaryEntries;
 }
 // -------------------------------------------------------------------------------
+
 
 var get3DGraphPoint = () => swizzle((state - center) * scale);
 var get3DGraphTranslation = () => swizzle((new Vector3(-t_graph.toNumber() + 6, 0, 0) - center) * scale);

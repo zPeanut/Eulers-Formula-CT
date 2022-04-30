@@ -55,8 +55,10 @@ var c1, c2;
 var q = BigNumber.ONE;
 
 // sneaky sneaky
-var s_achievement;
-var s_boolean = false;
+var s_achievement_1;
+var s_achievement_2;
+var s_boolean_1 = true;
+var s_boolean_2 = true;
 
 // milestone variables
 var a_base, a_exp;
@@ -268,8 +270,8 @@ var init = () => {
     theory.createAchievement(19, achievement_category_3, "Senior Writer", "Publish your research 25 times.", () => num_publications >= 25);
     theory.createAchievement(20, achievement_category_3, "Lead Author", "Publish your research 50 times.", () => num_publications >= 50);
 
-    theory.createSecretAchievement(21,"It's Bright!", 'Let q1 and q2 both have 19 levels.\nDo the Flashbang dance!\n\n', "19 is my favourite number.", () => (q1.level == 19 && q2.level == 19));
-    s_achievement = theory.createSecretAchievement(22,"Competition", 'Let t have 4, q1 have 2 and q2 have 0 levels.', "Smoke what everyday?", () => (t_speed.level == 4 && q1.level == 2 && q2.level == 0));
+    s_achievement_1 = theory.createSecretAchievement(21,"It's Bright!", 'Let q1 and q2 both have 19 levels while having above 1.4e7ρ.\nDo the Flashbang dance!\n\n', "19 is my favourite number.", () => (q1.level == 19 && q2.level == 19));
+    s_achievement_2 = theory.createSecretAchievement(22,"Competition", 'Let t have 4, q1 have 2 and q2 have 0 levels.', "Smoke what everyday?", () => (t_speed.level == 4 && q1.level == 2 && q2.level == 0));
 
     // Story chapters
     let storyChapter1 = "";
@@ -433,8 +435,11 @@ var postPublish = () => {
     q = BigNumber.ONE;
     t_graph = BigNumber.ZERO;
     num_publications++;
-    if(s_achievement.isUnlocked) {
-        s_boolean = true;
+    if(s_achievement_1.isUnlocked) {
+        s_boolean_1 = false;
+    }
+    if(s_achievement_2.isUnlocked) {
+        s_boolean_2 = false;
     }
 }
 
@@ -661,10 +666,10 @@ var getPrimaryEquation = () => {
 
 var getSecondaryEquation = () => {
     let s_condition = t_speed.level == 4 && q1.level == 2 && q2.level == 0;
-    theory.secondaryEquationHeight = s_condition ? 70 : 50;
+    theory.secondaryEquationHeight = (s_condition && s_boolean_2) ? 70 : 50;
     let result = "\\begin{array}{c}";
 
-    if(s_condition && !s_boolean) {
+    if(s_condition && s_boolean_2) {
         result += "\\text{EF >>>>> CSR2}\\\\";
         result += "\\text{WHO NEEDS ROOTS}\\\\"
         result += "\\text{WHEN YOU HAVE}\\\\"
@@ -693,7 +698,7 @@ var getSecondaryEquation = () => {
 
 var getTertiaryEquation = () => {
     let s = BigNumber.from(14102005);
-    let result = (q2.level == 19 && q1.level == 19 && currency.value > s) ? "\\text{do the Flashbang dance!}" : theory.latexSymbol + "=\\max\\rho^{0.4}";
+    let result = (q2.level == 19 && q1.level == 19 && currency.value > s && s_boolean_1) ? "\\text{do the Flashbang dance!}" : s_boolean_2 + theory.latexSymbol + "=\\max\\rho^{0.4}";
     return result;
 }
 

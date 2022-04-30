@@ -38,7 +38,7 @@ var authors = "Snaeky (SnaekySnacks#1161) - Balancing, Structuring, Story\n" +
     "XLII (XLII#0042) - Balancing, Structuring\n" +
     "peanut (peanut#6368) - Developer, Story";
 
-var version = "RC-29042022\\_2";
+var version = "RC-30042022\\_1";
 
 // init variables
 var currency, currency_R, currency_I;
@@ -93,6 +93,7 @@ var init = () => {
 
     max_R = BigNumber.ZERO;
     max_I = BigNumber.ZERO;
+    t = BigNumber.ZERO;
 
     quaternaryEntries = [];
 

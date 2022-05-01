@@ -14,15 +14,25 @@ import {CornerRadius} from "./api/ui/properties/CornerRadius";
 
 var id = "eulers_formula";
 var name = "Euler's Formula";
-var description = "You're a student hired by a professor at a famous university. Since your work have received a bit of attention from your colleagues, you decide to go into a subject not yet covered by your professor, which has interested you since day 1 of deciding to study mathematics - Complex Numbers.\n" +
+var description = "You're a student hired by a professor at a famous university. Since your work has received a bit of attention from your colleagues in the past, you decide to go into a subject not yet covered by your professor, which has interested you since day 1 of deciding to study mathematics - Complex Numbers.\n" +
     "You hope that with your research on this subject, you can finally get the breakthrough you always wanted in the scientific world.\n" +
     "\n" +
-    "This theory explores the world of complex numbers, their arrangement and their place in the Universe of Mathematics. The theory, named after famous mathematician Leonhard Euler and first mentioned by Roger Cotes in 1714, explores the relationship between exponential and trigonometric functions.\n" +
+    "This theory explores the world of complex numbers, their arrangement and their place in the Universe of Mathematics. The theory, named after famous mathematician Leonhard Euler, explores the relationship between exponential and trigonometric functions.\n" +
     "Your task is to use this formula, and with the help of the Pythagorean theorem, to calculate the distances of cos(t) and isin(t) from the origin and grow them as large as possible using many different methods and approaches!\n" +
     "A theory with interesting grow and decay rates, unusual properties, and (We hope) an interesting story!" +
     "\n\n" +
-    "Huge thanks to:\n" +
+    "Variable Explanation:" +
+    "\n\n" +
+    "t - A simple variable based on time. Is reset on publish." +
     "\n" +
+    "q - A variable helping you grow ρ, directly affected by t." +
+    "\n" +
+    "a - Multiple kinds of variables, helping you grow ρ." +
+    "\n" +
+    "b and c - Variables modifying cos(t) and isin(t)" +
+    "\n\n" +
+    "Huge thanks to:" +
+    "\n\n" +
     "- The entire Discord community, who've playtested this theory and reported many bugs, especially those active in #custom-theories-dev!\n" +
     "\n" +
     "and a personal thanks from peanut to:\n" +

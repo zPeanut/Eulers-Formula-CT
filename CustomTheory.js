@@ -246,7 +246,7 @@ var init = () => {
     let achievement_category_1 = theory.createAchievementCategory(0, "Currencies");
     let achievement_category_2 = theory.createAchievementCategory(1, "Milestones");
     let achievement_category_3 = theory.createAchievementCategory(2, "Publications");
-    let achievement_category_4 = theory.createAchievementCategory(2, "Secret Achievements");
+    let achievement_category_4 = theory.createAchievementCategory(3, "Secret Achievements");
 
     let e10 = BigNumber.from(1e10);
     let e20 = BigNumber.from(1e20);
@@ -713,7 +713,7 @@ var getQuaternaryEntries = () => {
     quaternaryEntries[0].value = q.toString(2);
     quaternaryEntries[1].value = t.toString(2);
     quaternaryEntries[2].value = R.toString(2);
-    quaternaryEntries[3].value = I.toString(2) + "i";
+    quaternaryEntries[3].value = -I.toString(2) + "i";
 
     return quaternaryEntries;
 }

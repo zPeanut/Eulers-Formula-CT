@@ -12,7 +12,7 @@ import { Vector3 } from "../../../Projects/theory-sdk/api/Vector3";
 import {Color} from "./api/ui/properties/Color";
 import {CornerRadius} from "./api/ui/properties/CornerRadius";
 
-var id = "eulers_formula";
+var id = "eulers_formula2";
 var name = "Euler's Formula";
 var description = "You're a student hired by a professor at a famous university. Since your work have received a bit of attention from your colleagues, you decide to go into a subject not yet covered by your professor, which has interested you since day 1 of deciding to study mathematics - Complex Numbers.\n" +
     "You hope that with your research on this subject, you can finally get the breakthrough you always wanted in the scientific world.\n" +
@@ -95,8 +95,8 @@ var init = () => {
 
     // t
     {
-        let getDesc = (level) => "\\dot{t}=" + BigNumber.from(0.2 + (0.2 * t_speed.level)).toString(t_speed.level > 3 ? 0 : 1);
-        let getInfo = (level) => "\\dot{t}=" + BigNumber.from(0.2 + (0.2 * t_speed.level)).toString(t_speed.level > 3 ? 0 : 1);
+        let getDesc = (level) => "\\dot{t}=" + BigNumber.from(0.2 + (0.2 * level)).toString(level > 3 ? 0 : 1);
+        let getInfo = (level) => "\\dot{t}=" + BigNumber.from(0.2 + (0.2 * level)).toString(level > 3 ? 0 : 1);
         t_speed = theory.createUpgrade(0, currency, new ExponentialCost(1e6, Math.log2(1e6)));
         t_speed.getDescription = (_) => Utils.getMath(getDesc(t_speed.level));
         t_speed.getInfo = (amount) => Utils.getMathTo(getInfo(t_speed.level), getInfo(t_speed.level + amount));

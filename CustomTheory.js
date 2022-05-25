@@ -1,4 +1,4 @@
-﻿/*
+/*
 -------------------------------
 Euler's Formula Custom Theory
 -------------------------------
@@ -13,9 +13,6 @@ Code used from:
 
 
  */
-
-
-
 
 
 import {CustomCost, ExponentialCost, FreeCost} from "./api/Costs";
@@ -44,7 +41,6 @@ var releaseOrder = "3";
 var currency, currency_R, currency_I;
 var quaternaryEntries;
 var app_was_closed = false;
-let hasAdded = false;
 
 // upgrade variables
 var q1, q2;
@@ -336,7 +332,6 @@ var init = () => {
         theory.createAchievement(19, achievement_category_3, "Senior Writer", "Publish your research 25 times.", () => num_publications >= 25);
         theory.createAchievement(20, achievement_category_3, "Lead Author", "Publish your research 50 times.", () => num_publications >= 50);
         theory.createAchievement(27, achievement_category_3, "Famed Legend", "Publish your research 100 times.", () => num_publications >= 50);
-
 
         // stop spoiling yourselves and figure out yourselves, what the SA's are !
         sa1 = theory.createSecretAchievement(21, achievement_category_4, "It's Bright!", sa1_description, "19 is my favourite number.", () => s1Proof());

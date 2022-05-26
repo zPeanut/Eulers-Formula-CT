@@ -1,7 +1,7 @@
 /*
--------------------------------
+---------------------------------
 Euler's Formula Custom Theory
--------------------------------
+---------------------------------
 Made by: Snaeky, XLII
 Developed by: peanut
 
@@ -10,10 +10,9 @@ Code used from:
     - Eaux Tacous#1021
     - EdgeOfDreams#4525
 
-
-
+If you have any questions regarding EF's code or similiar, message me at peanut#6368 on discord.
+And as always: do the flashbang dance!
  */
-
 
 import {CustomCost, ExponentialCost, FreeCost} from "./api/Costs";
 import { Localization } from "./api/Localization";
@@ -34,7 +33,7 @@ var id = "eulers_formula";
 var name = "Euler's Formula";
 var description = "You're a student hired by a professor at a famous university. Since your work has received a bit of attention from your colleagues in the past, you decide to go into a subject not yet covered by your professor, which has interested you since day 1 of deciding to study mathematics - Complex Numbers.\nYou hope that with your research on this subject, you can finally get the breakthrough you always wanted in the scientific world.\n\nThis theory explores the world of complex numbers, their arrangement and their place in the Universe of Mathematics. The theory, named after famous mathematician Leonhard Euler, explores the relationship between exponential and trigonometric functions.\nYour task is to use this formula, and with the help of the Pythagorean theorem, to calculate the distances of cos(t) and isin(t) from the origin and grow them as large as possible using many different methods and approaches!\nA theory with interesting grow and decay rates, unusual properties, and (We hope) an interesting story!\n\nVariable Explanation:\n\nt - A simple variable based on time. Is reset on publish.\nq - A variable helping you grow ρ, directly affected by t.\na - Multiple kinds of variables, helping you grow ρ.\nb and c - Variables modifying cos(t) and isin(t)\n\nHuge thanks to:\n\n- Gilles-Philippe, for implementing integral features we proposed, helping us a *ton* during development, answering our questions and giving us beta features to use in our theories!\n\n- XLII, doing basically ALL of the balancing together with Snaeky, deciding various integral features of the theory such as, but not limited to: milestone placement, milestone costs, publication multipliers and a lot more!\n\n- Snaeky, without whom this theory would not have been possible as he was the one with the original idea of structuring a theory around Euler's Formula, and always answered my (peanut's) questions and motivated us all to push this theory forward.\n\nand of course:\n\n- The entire Discord community, who've playtested this theory and reported many bugs, especially those active in #custom-theories-dev!\n\nWe hope you enjoy playing this theory as much as we had developing it and coming up with ideas for it!\n\n- The Eulers-Formula-CT Team"
 var authors = "Snaeky (SnaekySnacks#1161) - Structuring\nXLII (XLII#0042) - Balancing\npeanut (peanut#6368) - Developer";
-var version = 3;
+var version = 4;
 var releaseOrder = "3";
 
 // internal variables
@@ -50,17 +49,17 @@ var c1, c2;
 var q = BigNumber.ONE;
 
 // sneaky sneaky
-var sa1, sa2, sa3, sa4, sa5, sa6;
-var sa1_boolean = true;
-var sa2_boolean = true;
-var sa3_boolean = true;
-var sa4_boolean = true;
-var sa5_boolean = true;
-var sa6_boolean = true;
-var sa6_boolean_1 = false;
+var sa1, sa2, sa3, sa4, sa5, sa6, sa7;
+var sa1_boolean = false;
+var sa2_boolean = false;
+var sa3_boolean = false;
 var sa3_count = 0;
+var sa4_boolean = false;
 var sa4_count = 0;
+var sa5_boolean = false;
 var sa5_count = 0;
+var sa6_boolean = false;
+var sa6_boolean_1 = false;
 var sa6_count = 0;
 var sa6_count_questions_correct = 0;
 var sa6_text = "";
@@ -68,6 +67,10 @@ var sa6_question_1 = false;
 var sa6_question_2 = false;
 var sa6_question_3 = false;
 var sa6_button;
+var sa7_boolean = false;
+var sa7_boolean_1 = false;
+var sa7_button = false;
+var sa7_text = "";
 
 var sa1_description = "L"+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(!![]+[])[(+[])]+` `+'q'+`1`+` `+(![]+[])[(+!+[])]+([]+[]+[][[]])[(+!+[])]+([]+[]+[][[]])[((+!+[])+(+!+[]))]+` `+'q'+`2`+` `+(typeof [])[(+!+[])]+(typeof ![])[(+!+[])]+(!![]+[])[(+[])]+'h'+` `+'h'+(![]+[])[(+!+[])]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+`1`+`9`+` `+(![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(![]+[])[((+!+[])+(+!+[]))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+` `+'w'+'h'+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+'h'+(![]+[])[(+!+[])]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[])]+(typeof ([]+[]))[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+` `+(![]+[])[(+!+[])]+(typeof [])[(+!+[])]+(typeof ![])[(+!+[])]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+`1`+`.`+`4`+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+`7`+`ρ`+`.`+"\n\n"+``+"D"+(typeof ![])[(+!+[])]+` `+(!![]+[])[(+[])]+'h'+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+(![]+[])[(+[])]+(![]+[])[((+!+[])+(+!+[]))]+(![]+[])[(+!+[])]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+'h'+(typeof [])[(+!+[])]+(![]+[])[(+!+[])]+([]+[]+[][[]])[(+!+[])]+(typeof ([]+[]))[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+` `+([]+[]+[][[]])[((+!+[])+(+!+[]))]+(![]+[])[(+!+[])]+([]+[]+[][[]])[(+!+[])]+(typeof [])[((+!+[])+(+!+[]))*((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+`!`+``+`\n\n`;
 var sa2_description = "L"+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(!![]+[])[(+[])]+` `+(!![]+[])[(+[])]+` `+'h'+(![]+[])[(+!+[])]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+`4`+`,`+` `+'q'+`1`+` `+'h'+(![]+[])[(+!+[])]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+`2`+` `+(![]+[])[(+!+[])]+([]+[]+[][[]])[(+!+[])]+([]+[]+[][[]])[((+!+[])+(+!+[]))]+` `+'q'+`2`+` `+'h'+(![]+[])[(+!+[])]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+`0`+` `+(![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(![]+[])[((+!+[])+(+!+[]))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+`.`+`\n\n`+"D"+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(typeof [])[((+!+[])+(+!+[]))*((+!+[])+(+!+[]))]+(![]+[])[(+!+[])]+(!![]+[])[(+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[((+!+[])+(+!+[]))]+` `+(!![]+[])[(+[])]+(typeof ![])[(+!+[])]+` `+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[(+!+[])]+(![]+[])[(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+'k'+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+`.\n\n`;
@@ -75,6 +78,7 @@ var sa3_description = "B"+(!![]+[])[((+!+[])+(+!+[]))]+(([]).constructor.name)[(
 var sa4_description = "B"+(!![]+[])[((+!+[])+(+!+[]))]+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+` `+`1`+`0`+` `+(![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(![]+[])[((+!+[])+(+!+[]))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+` `+(typeof ![])[(+!+[])]+(![]+[])[(+[])]+` `+(![]+[])[(+!+[])]+([]+[]+[][[]])[(+!+[])]+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+` `+(!![]+[])[((+!+[])+(+!+[]))]+(RegExp().constructor.name)[((+!+[])+(+!+[]))+(+!+[]+((+!+[])+(+!+[])))]+(typeof ([]+[]))[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(!![]+[])[(+!+[])]+(![]+[])[(+!+[])]+([]+[]+[][[]])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+`,`+` `+(typeof ![])[(+!+[])]+([]+[]+[][[]])[(+!+[])]+(![]+[])[((+!+[])+(+!+[]))]+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+` `+'w'+'h'+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[(+!+[])]+` `+(typeof ([]+[]))[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+`_`+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+` `+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+` `+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(RegExp().constructor.name)[(+!+[]+((+!+[])+(+!+[])))+(+!+[])]+(![]+[])[(+!+[])]+(typeof [])[((+!+[])+(+!+[]))*((+!+[])+(+!+[]))]+(!![]+[])[(+[])]+(![]+[])[((+!+[])+(+!+[]))]+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+` `+`1`+`.\n\nH`+(typeof ![])[(+!+[])]+'w'+` `+([]+[]+[][[]])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+([]+[]+[][[]])[((+!+[])+(+!+[]))]+` `+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+(typeof ![])[(+!+[])]+(!![]+[])[((+!+[])+(+!+[]))]+` `+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[(+!+[])]+` `+([]+[]+[][[]])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+(typeof [])[((+!+[])+(+!+[]))*((+!+[])+(+!+[]))]+(typeof ![])[(+!+[])]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(!![]+[])[(+!+[])]+` `+(!![]+[])[(+[])]+'h'+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+`?\n\n`
 var sa5_description = "L"+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(!![]+[])[(+[])]+` `+(!![]+[])[(+[])]+'h'+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+(!![]+[])[(+[])]+'h'+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(typeof ![])[(+!+[])]+(!![]+[])[(+!+[])]+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+` `+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+([]+[]+[][[]])[((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+(![]+[])[(+[])]+(typeof ![])[(+!+[])]+(!![]+[])[(+!+[])]+` `+(![]+[])[(+!+[])]+` `+'w'+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+'k'+`,`+` `+'w'+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(!![]+[])[(+[])]+'h'+` `+(typeof ![])[(+!+[])]+([]+[]+[][[]])[(+!+[])]+(![]+[])[((+!+[])+(+!+[]))]+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+` `+`1`+` `+(![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+([]).constructor)[(+[+!+[]+[+[]+[+[]]]])/((+!+[])+(+!+[]))/((+!+[])+(+!+[]))-(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(![]+[])[((+!+[])+(+!+[]))]+` `+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[])]+` `+'q'+`1`+`.\n\n`+'W'+'h'+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+` `+(![]+[])[(+!+[])]+(!![]+[])[(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+(typeof ![])[(+!+[])]+(!![]+[])[((+!+[])+(+!+[]))]+` `+([]+[]+[][[]])[((+!+[])+(+!+[]))]+(typeof ![])[(+!+[])]+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[])]+(typeof ([]+[]))[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+` `+(!![]+[])[(+[])]+'h'+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+`?`;
 var sa6_description = "A"+([]+[]+[][[]])[(+!+[])]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+'w'+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(!![]+[])[(+!+[])]+` `+(![]+[])[(+!+[])]+(![]+[])[((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+` `+`3`+` `+'q'+(!![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+(!![]+[])[(+[])]+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(typeof ![])[(+!+[])]+([]+[]+[][[]])[(+!+[])]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+`,`+` `+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[])]+` `+(!![]+[])[(+[])]+'h'+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+` `+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(typeof [])[((+!+[])+(+!+[]))*((+!+[])+(+!+[]))]+(!![]+[])[(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(!![]+[])[(+[])]+` `+(RegExp().constructor.name)[((+!+[])+(+!+[]))+(+!+[]+((+!+[])+(+!+[])))]+(typeof ![])[(+!+[])]+(RegExp().constructor.name)[((+!+[])+(+!+[]))+(+!+[]+((+!+[])+(+!+[])))]+(!![]+[])[((+!+[])+(+!+[]))]+(RegExp().constructor.name)[((+!+[])+(+!+[]))+(+!+[]+((+!+[])+(+!+[])))]+`.\n\n`+`I `+(!![]+[])[(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(![]+[])[(+!+[])]+(![]+[])[((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+(([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+` `+(![]+[])[(+!+[])]+(typeof +[])[((+!+[])+(+!+[]))]+` `+(typeof [])[(+!+[])]+(typeof ![])[(+!+[])]+(!![]+[])[(+!+[])]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[((+!+[])+(+!+[]))]+`,`+` `+(![]+[])[(+!+[])]+(typeof +[])[((+!+[])+(+!+[]))]+` I`+`.`;
+var sa7_description = ""
 
 // milestone variables
 var a_base, a_exp;
@@ -131,7 +135,7 @@ var init = () => {
             q1 = theory.createUpgrade(1, currency, new FirstFreeCost(new ExponentialCost(10, Math.log2(1.61328))));
             q1.getDescription = (_) => Utils.getMath(getDesc(q1.level));
             q1.getInfo = (amount) => Utils.getMathTo(getDesc(q1.level), getDesc(q1.level + amount));
-            q1.bought = (sVarBought());
+            q1.bought = (_) => { saVarBought(); getSA7Popup.show() };
         }
 
         // q2
@@ -141,7 +145,7 @@ var init = () => {
             q2 = theory.createUpgrade(2, currency, new ExponentialCost(5, Math.log2(60)));
             q2.getDescription = (_) => Utils.getMath(getDesc(q2.level));
             q2.getInfo = (amount) => Utils.getMathTo(getInfo(q2.level), getInfo(q2.level + amount));
-            q2.bought = (sVarBought());
+            q2.bought = (_) => saVarBought();
         }
 
         // b1
@@ -151,7 +155,7 @@ var init = () => {
             b1 = theory.createUpgrade(3, currency_R, new FirstFreeCost(ExponentialCost(20, Math.log2(200))));
             b1.getDescription = (_) => Utils.getMath(getDesc(b1.level));
             b1.getInfo = (amount) => Utils.getMathTo(getDesc(b1.level), getDesc(b1.level + amount));
-            b1.bought = (sVarBought());
+            b1.bought = (_) => saVarBought();
         }
 
         // b2
@@ -161,7 +165,7 @@ var init = () => {
             b2 = theory.createUpgrade(4, currency_R, new ExponentialCost(100, Math.log2(2)));
             b2.getDescription = (_) => Utils.getMath(getDesc(b2.level));
             b2.getInfo = (amount) => Utils.getMathTo(getInfo(b2.level), getInfo(b2.level + amount));
-            b2.bought = (sVarBought());
+            b2.bought = (_) => saVarBought();
         }
 
 
@@ -172,7 +176,7 @@ var init = () => {
             c1 = theory.createUpgrade(5, currency_I, new FirstFreeCost(new ExponentialCost(20, Math.log2(200))));
             c1.getDescription = (_) => Utils.getMath(getDesc(c1.level));
             c1.getInfo = (amount) => Utils.getMathTo(getDesc(c1.level), getDesc(c1.level + amount));
-            c1.bought = (sVarBought());
+            c1.bought = (_) => saVarBought();
         }
 
         // c2
@@ -182,7 +186,7 @@ var init = () => {
             c2 = theory.createUpgrade(6, currency_I, new ExponentialCost(100, Math.log2(2)));
             c2.getDescription = (_) => Utils.getMath(getDesc(c2.level));
             c2.getInfo = (amount) => Utils.getMathTo(getInfo(c2.level), getInfo(c2.level + amount));
-            c2.bought = (sVarBought());
+            c2.bought = (_) => saVarBought();
         }
 
         // a1
@@ -192,7 +196,7 @@ var init = () => {
             a1 = theory.createUpgrade(7, currency, new FirstFreeCost(new ExponentialCost(2000, 2.2)));
             a1.getDescription = (_) => Utils.getMath(getDesc(a1.level));
             a1.getInfo = (amount) => Utils.getMathTo(getDesc(a1.level), getDesc(a1.level + amount));
-            a1.bought = (sVarBought());
+            a1.bought = (_) => saVarBought();
         }
 
         // a2
@@ -202,7 +206,7 @@ var init = () => {
             a2 = theory.createUpgrade(8, currency_R, new ExponentialCost(500, 2.2));
             a2.getDescription = (_) => Utils.getMath(getDesc(a2.level));
             a2.getInfo = (amount) => Utils.getMathTo(getInfo(a2.level), getInfo(a2.level + amount));
-            a2.bought = (sVarBought());
+            a2.bought = (_) => saVarBought();
         }
 
         // a3
@@ -212,7 +216,7 @@ var init = () => {
             a3 = theory.createUpgrade(9, currency_I, new ExponentialCost(500, 2.2));
             a3.getDescription = (_) => Utils.getMath(getDesc(a3.level));
             a3.getInfo = (amount) => Utils.getMathTo(getInfo(a3.level), getInfo(a3.level + amount));
-            a3.bought = (sVarBought());
+            a3.bought = (_) => saVarBought();
         }
     }
 
@@ -226,7 +230,13 @@ var init = () => {
             sa6_button = theory.createPermanentUpgrade(99, currency, new FreeCost());
             sa6_button.getDescription = (_) => "The Secret Chamber";
             sa6_button.getInfo = (_) => "pshhhhhhhhhhhhhhhhhhhhh";
-            sa6_button.boughtOrRefunded = (_) => getS6Popup.show()
+            sa6_button.boughtOrRefunded = (_) => getSA6Popup.show()
+        }
+        {
+            sa7_button = theory.createPermanentUpgrade(98, currency, new FreeCost());
+            sa7_button.getDescription = (_) => "The Casino";
+            sa7_button.getInfo = (_) => "Click here to sell your soul";
+            sa7_button.boughtOrRefunded = (_) => getSA6Popup.show()
         }
     }
 
@@ -331,15 +341,16 @@ var init = () => {
         theory.createAchievement(18, achievement_category_3, "Famous Publicist", "Publish your research 10 times.", () => num_publications >= 10);
         theory.createAchievement(19, achievement_category_3, "Senior Writer", "Publish your research 25 times.", () => num_publications >= 25);
         theory.createAchievement(20, achievement_category_3, "Lead Author", "Publish your research 50 times.", () => num_publications >= 50);
-        theory.createAchievement(27, achievement_category_3, "Famed Legend", "Publish your research 100 times.", () => num_publications >= 50);
+        theory.createAchievement(99, achievement_category_3, "Famed Legend", "Publish your research 100 times.", () => num_publications >= 50);
 
         // stop spoiling yourselves and figure out yourselves, what the SA's are !
-        sa1 = theory.createSecretAchievement(21, achievement_category_4, "It's Bright!", sa1_description, "19 is my favourite number.", () => s1Proof());
-        sa2 = theory.createSecretAchievement(22, achievement_category_4, "Competition", sa2_description, "Smoke what everyday?", () => s2Proof());
-        sa3 = theory.createSecretAchievement(23, achievement_category_4, "Imparnumerophobia", sa3_description, "I don't like odd numbers.", () => s3Proof());
-        sa4 = theory.createSecretAchievement(24, achievement_category_4, "Perfectionist", sa4_description, "Flawlessness is my speciality.", () => s4Proof());
-        sa5 = theory.createSecretAchievement(25, achievement_category_4, "Minimalist", sa5_description, "Why waste time do active when few idle do trick?", () => s5Proof());
-        sa6 = theory.createSecretAchievement(26, achievement_category_4, "Trivia", sa6_description, "12 3 3 20 19 16 3 4 11", () => s6Proof());
+        sa1 = theory.createSecretAchievement(21, achievement_category_4, "It's Bright!", sa1_description, "19 is my favourite number.", () => sa1Proof());
+        sa2 = theory.createSecretAchievement(22, achievement_category_4, "Competition", sa2_description, "Smoke what everyday?", () => sa2Proof());
+        sa3 = theory.createSecretAchievement(23, achievement_category_4, "Imparnumerophobia", sa3_description, "I don't like odd numbers.", () => sa3Proof());
+        sa4 = theory.createSecretAchievement(24, achievement_category_4, "Perfectionist", sa4_description, "Flawlessness is my speciality.", () => sa4Proof());
+        sa5 = theory.createSecretAchievement(25, achievement_category_4, "Minimalist", sa5_description, "Why waste time do active when few idle do trick?", () => sa5Proof());
+        sa6 = theory.createSecretAchievement(26, achievement_category_4, "Trivia", sa6_description, "12 3 3 20 19 16 3 4 11", () => sa6Proof());
+        sa7 = theory.createSecretAchievement(27, achievement_category_4, "Gambler", "!", "Feeding a gambling addiction, one step at a time.", () => sa7Proof());
     }
 
     // Story Chapter 1
@@ -537,6 +548,7 @@ var updateAvailability = () => {
     currency_I.isAvailable = dimension.level > 1;
 
     sa6_button.isAvailable = sa6_boolean_1;
+    sa7_button.isAvailable = sa7_boolean_1;
 }
 
 var postPublish = () => {
@@ -546,16 +558,16 @@ var postPublish = () => {
     t_graph = BigNumber.ZERO;
     num_publications++;
     if(sa1.isUnlocked) {
-        sa1_boolean = false;
+        sa1_boolean = true;
     }
     if(sa2.isUnlocked) {
-        sa2_boolean = false;
+        sa2_boolean = true;
     }
     if(sa3.isUnlocked) {
-        sa3_boolean = false;
+        sa3_boolean = true;
     }
     if(sa4.isUnlocked) {
-        sa4_boolean = false;
+        sa4_boolean = true;
     }
 }
 
@@ -630,7 +642,7 @@ var getEndPopup = ui.createPopup({
     })
 });
 
-var getS6Popup = ui.createPopup({
+var getSA6Popup = ui.createPopup({
     title: "Hm?",
     content: ui.createStackLayout({
         children: [
@@ -673,7 +685,7 @@ var getS6Popup = ui.createPopup({
             }),
             ui.createButton({
                 text: "Check",
-                onClicked: () => s6PopUpProof()
+                onClicked: () => sa6PopupProof()
             }),
             ui.createLabel({
                 text: () => sa6_count_questions_correct + " / 3 answers correct.",
@@ -685,41 +697,87 @@ var getS6Popup = ui.createPopup({
     })
 });
 
-var s6PopUpProof = () => {
+var sa6PopupProof = () => {
     if(!sa6_question_1 && sa6_text.toLowerCase() == "04052022") { // ef release date
         sa6_question_1 = true;
         sa6_count_questions_correct++;
-        getS6PopupCorrect.show();
+        getSA6PopupCorrect.show();
         return;
     }
     if(!sa6_question_2 && (sa6_text.toLowerCase() == (typeof ([]+[]))[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+`-`+(RegExp().constructor.name)[((+!+[])+(+!+[]))+(+!+[]+((+!+[])+(+!+[])))]+'h'+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(RegExp().constructor.name)[((+!+[])+(+!+[]))+(+!+[]+((+!+[])+(+!+[])))]+(RegExp().constructor.name)[((+!+[])+(+!+[]))+(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))] || sa6_text.toLowerCase() == (typeof ([]+[]))[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]+` `+(RegExp().constructor.name)[((+!+[])+(+!+[]))+(+!+[]+((+!+[])+(+!+[])))]+'h'+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+(![]+[])[((+!+[])+(+!+[]))]+([]+[]+[][[]])[(+[+!+[]+[+[]]])/((+!+[])+(+!+[]))]+(RegExp().constructor.name)[((+!+[])+(+!+[]))+(+!+[]+((+!+[])+(+!+[])))]+(RegExp().constructor.name)[((+!+[])+(+!+[]))+(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))])) { // king
         sa6_question_2 = true;
         sa6_count_questions_correct++;
-        getS6PopupCorrect.show();
+        getSA6PopupCorrect.show();
         return;
     }
     if(!sa6_question_3 && sa6_text.toLowerCase() == (([]).constructor.name)[(+!+[])+(+!+[]+((+!+[])+(+!+[])))]+([]+[]+[][[]])[(+!+[]+((+!+[])+(+!+[])))]+(![]+[])[(+!+[]+((+!+[])+(+!+[])))]) { // a3
         sa6_question_3 = true;
         sa6_count_questions_correct++;
-        getS6PopupCorrect.show();
+        getSA6PopupCorrect.show();
         return;
     }
     sa6_count++;
 }
 
-var getS6PopupCorrect = ui.createPopup({
+var getSA6PopupCorrect = ui.createPopup({
     title: "Correct!"
 });
 
-var sVarBought = () => {
-    if(sa3_boolean) {
+var getRarityColor = (name) => {
+    switch(name) {
+        case "Common":
+            return Color.fromHex("d4d4d4");
+        case "Uncommon":
+            return Color.fromHex("69ff78");
+        case "Rare":
+            return Color.fromHex("69caff")
+        case "Legendary":
+            return Color.fromHex("ffd257")
+        default:
+            return Color.TRANSPARENT
+    }
+}
+
+let test = false;
+var getSA7Popup = ui.createPopup({
+    title: "Hm?",
+    content: ui.createStackLayout({
+        children: [
+            ui.createLabel({
+                text: "test",
+                horizontalTextAlignment: TextAlignment.CENTER,
+                fontSize: 14,
+                padding: Thickness(0, 0, 0, 10),
+            }),
+            ui.createButton({
+                text: "Check",
+                onClicked: () => { test = true },
+            }),
+            ui.createLabel({
+                text: () => sa7_text,
+                horizontalTextAlignment: TextAlignment.CENTER,
+                fontSize: 14,
+                padding: Thickness(0, 5, 0, 0),
+            }),
+            ui.createBox({
+                heightRequest: 10,
+                margin: new Thickness(0, 10),
+                color: () => getRarityColor(sa7_text)
+            })
+        ]
+    })
+});
+
+var saVarBought = () => {
+    if(!sa3_boolean) {
         if (t.round() % 2 == 0) {
             sa3_count++;
         } else {
             sa3_count = 0;
         }
     }
-    if(sa4_boolean) {
+
+    if(!sa4_boolean) {
         if(i_graph > 0.9) {
             sa4_count++;
         } else {
@@ -728,31 +786,71 @@ var sVarBought = () => {
     }
 }
 
-var s1Proof = () => {
+var sa1Proof = () => {
     return q1.level == 19 && q2.level == 19;
 }
 
-var s2Proof = () => {
+var sa2Proof = () => {
     return t_speed.level == 4 && q1.level == 2 && q2.level == 0;
 }
 
-var s3Proof = () => {
+var sa3Proof = () => {
     return sa3_count == 10;
 }
 
-var s4Proof = () => {
+var sa4Proof = () => {
     return sa4_count == 10;
 }
 
-var s5Proof = () => {
-    return !sa5_boolean;
+var sa5Proof = () => {
+    return sa5_boolean;
 }
 
-var s6Proof = () => {
-    return !sa6_boolean;
+var sa6Proof = () => {
+    return sa6_boolean;
+}
+
+var sa7Proof = () => {
+    return sa7_boolean;
+}
+
+
+let elapsed = 0;
+let frameCounter = 0;
+let frameSkip = 1;
+let rarity = [
+    "Common",
+    "Uncommon",
+    "Rare",
+    "Legendary"
+]
+function getRandom() {
+    var num = Math.random();
+    if(num < 0.7) return 0;  // 0.7 Probability         - Common
+    else if(num < 0.9) return 1; // 0.2 Probability     - Uncommon
+    else if(num < 0.97) return 2; // 0.07 Probability   - Rare
+    else return 3;  // 0.03 Probability                 - Legendary
+}
+
+function update() {
+    let randomIndex = getRandom();
+    let winner = rarity[randomIndex];
+    sa7_text = winner;
 }
 
 var tick = (elapsedTime, multiplier) => {
+    log(test)
+    if(test) {
+        elapsed++;
+        frameCounter++;
+        if (elapsed < 40) {
+            update();
+        } else {
+            elapsed = 0;
+            test = false;
+        }
+    }
+
     let dt = BigNumber.from(elapsedTime * multiplier);
     let bonus = theory.publicationMultiplier;
 
@@ -821,18 +919,18 @@ var tick = (elapsedTime, multiplier) => {
     if(!sa5.isUnlocked && q1.level == 1 && t_speed.level == 0 && q2.level == 0 && b1.level == 0 && b2.level == 0 && c1.level == 0 && c2.level == 0 && a1.level == 0 && a2.level == 0 && a3.level == 0) {
         sa5_count++;
         if(sa5_count / 10 == 120960) { // 7 days idle on one single q1
-            sa5_boolean = false;
+            sa5_boolean = true;
         }
     } else {
         sa5_count = 0;
     }
 
-    if(!sa6.isUnlocked) {
-        if(sa6_count_questions_correct == 3) {
-            sa6_boolean = false;
-        }
-        sa6_boolean_1 = t_speed.level == 1 && q1.level == 3 && q2.level == 3 && b1.level == 7;
+    if(sa6_count_questions_correct == 3) {
+        sa6_boolean = true;
     }
+    sa6_boolean_1 = t_speed.level == 1 && q1.level == 3 && q2.level == 3 && b1.level == 7;
+
+    sa7_boolean_1 = q1.level == 7 && q2.level == 7 && b1.level == 7;
 
     let base_currency_multiplier = dt * bonus;
 
@@ -941,7 +1039,7 @@ var getPrimaryEquation = () => {
 }
 
 var getSecondaryEquation = () => {
-    let sa2_seq_condition = s2Proof() && sa2_boolean;
+    let sa2_seq_condition = sa2Proof() && !sa2_boolean;
     theory.secondaryEquationHeight = sa2_seq_condition ? 70 : 50;
     let result = "\\begin{array}{c}";
 
@@ -976,7 +1074,7 @@ var getSecondaryEquation = () => {
 
 var getTertiaryEquation = () => {
     let sa1_teq_value = BigNumber.from(14102005);
-    let sa1_teq_condition = s1Proof() && currency.value > sa1_teq_value && sa1_boolean;
+    let sa1_teq_condition = sa1Proof() && currency.value > sa1_teq_value && !sa1_boolean;
     let result = "\\begin{array}{c}" + (sa1_teq_condition ? "\\text{-- do the flashbang dance! --}" : theory.latexSymbol + "=\\max\\rho^{0.4}" + (sa6_boolean_1 ? "\\\\\\text{The Secret Chamber has been unlocked.}" : "")) + "\\end{array}";
     return result;
 }
